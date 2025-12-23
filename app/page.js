@@ -16,6 +16,7 @@ function useWindowSize() {
 // Snapshot spaces for our protocols
 const SNAPSHOT_SPACES = [
   { id: 'aave.eth', name: 'Aave', color: '#B6509E' },
+  { id: 'aavelabs.eth', name: 'Aave Labs', color: '#B6509E' },
   { id: 'lido-snapshot.eth', name: 'Lido', color: '#00A3FF' },
   { id: 'uniswapgovernance.eth', name: 'Uniswap', color: '#FF007A' },
   { id: 'arbitrumfoundation.eth', name: 'Arbitrum', color: '#28A0F0' },
@@ -35,6 +36,10 @@ const SNAPSHOT_SPACES = [
   { id: 'dydxgov.eth', name: 'dYdX', color: '#6966FF' },
   { id: 'apecoin.eth', name: 'ApeCoin', color: '#0052FF' },
   { id: 'compound-governor.eth', name: 'Compound', color: '#00D395' },
+  { id: 'sushigov.eth', name: 'Sushi', color: '#FA52A0' },
+  { id: '1inch.eth', name: '1inch', color: '#1B314F' },
+  { id: 'snapshot.dcl.eth', name: 'Decentraland', color: '#FF2D55' },
+  { id: 'jup.eth', name: 'Jupiter', color: '#C7F284' },
 ];
 
 // Categories: Lending, DEX, Staking, L2, Perp, Yield, Stable, Chain
@@ -113,9 +118,9 @@ function timeAgo(dateString) {
 function getMockTopics(forumId) {
   const data = {
     aave: [
-      { id: 1, slug: 'a', title: '[ARFC] Risk Parameter Updates - Polygon v3', posts_count: 23, views: 1205, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 2, slug: 'b', title: 'Emergency Response to Oracle Manipulation Attempt', posts_count: 89, views: 4520, created_at: new Date(Date.now() - 7200000).toISOString() },
-      { id: 3, slug: 'c', title: '[TEMP CHECK] Add weETH as Collateral', posts_count: 45, views: 2100, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 1, slug: 'arfc-aave-token-alignment', title: '🔥 [ARFC] AAVE Token Alignment Phase 1 – Ownership (VOTE LIVE)', posts_count: 312, views: 28500, created_at: new Date(Date.now() - 1800000).toISOString() },
+      { id: 2, slug: 'b', title: '⚠️ Labs Unilaterally Pushed Vote - Author Denounces', posts_count: 189, views: 15200, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 3, slug: 'c', title: 'Whale Dumps $38M AAVE Amid Governance Crisis', posts_count: 234, views: 19800, created_at: new Date(Date.now() - 7200000).toISOString() },
     ],
     lido: [
       { id: 1, slug: 'a', title: 'Concerns about validator concentration risk', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 1800000).toISOString() },
@@ -351,6 +356,22 @@ function SnapshotVotes({ width }) {
     fetchProposals();
   }, []);
 
+  // Custom governance portals (not on Snapshot hub)
+  const CUSTOM_GOVERNANCE = [
+    { 
+      id: 'aave-alignment-2025',
+      title: '🔥 [ARFC] AAVE Token Alignment Phase 1 – Ownership',
+      space: { id: 'aave.eth', name: 'Aave' },
+      end: new Date('2025-12-26T23:59:59Z').getTime(),
+      scores: [1200000, 3800000, 500000],
+      scores_total: 5500000,
+      choices: ['YAE', 'NAY', 'ABSTAIN'],
+      state: 'active',
+      isControversial: true,
+      link: 'https://vote.onaave.com'
+    }
+  ];
+
   const fetchProposals = async () => {
     setLoading(true);
     try {
@@ -394,7 +415,12 @@ function SnapshotVotes({ width }) {
       
       const data = await response.json();
       if (data.data?.proposals) {
-        setProposals(data.data.proposals);
+        // Combine Snapshot proposals with custom governance
+        const allProposals = [...CUSTOM_GOVERNANCE, ...data.data.proposals];
+        setProposals(allProposals);
+      } else {
+        // If Snapshot fails, use mock data with custom governance
+        setProposals([...CUSTOM_GOVERNANCE, ...getMockProposals().filter(p => p.space?.id !== 'aave.eth')]);
       }
     } catch (error) {
       console.error('Failed to fetch Snapshot proposals:', error);
@@ -405,7 +431,7 @@ function SnapshotVotes({ width }) {
   };
 
   const getMockProposals = () => [
-    { id: '1', title: '[ARFC] Increase GHO Borrow Rate', space: { id: 'aave.eth', name: 'Aave' }, end: Date.now() + 86400000, scores: [1500000, 200000], scores_total: 1700000, choices: ['For', 'Against'], state: 'active' },
+    { id: 'aave-alignment', title: '🔥 [ARFC] AAVE Token Alignment Phase 1 – Ownership', space: { id: 'aave.eth', name: 'Aave' }, end: Date.now() + 259200000, scores: [1200000, 3800000, 500000], scores_total: 5500000, choices: ['YAE', 'NAY', 'ABSTAIN'], state: 'active', isControversial: true, link: 'https://vote.onaave.com' },
     { id: '2', title: 'LIP-28: Treasury Diversification', space: { id: 'lido-snapshot.eth', name: 'Lido' }, end: Date.now() + 172800000, scores: [8000000, 1000000], scores_total: 9000000, choices: ['Yes', 'No'], state: 'active' },
     { id: '3', title: 'Fee Switch Activation Vote', space: { id: 'uniswapgovernance.eth', name: 'Uniswap' }, end: Date.now() + 259200000, scores: [45000000, 5000000], scores_total: 50000000, choices: ['Enable', 'Disable'], state: 'active' },
     { id: '4', title: 'AIP-87: Gaming Catalyst Program', space: { id: 'arbitrumfoundation.eth', name: 'Arbitrum' }, end: Date.now() + 345600000, scores: [120000000, 30000000], scores_total: 150000000, choices: ['For', 'Against'], state: 'active' },
@@ -489,28 +515,30 @@ function SnapshotVotes({ width }) {
             const leadingChoice = proposal.scores?.indexOf(Math.max(...(proposal.scores || [0]))) || 0;
             const leadingPercent = totalVotes > 0 ? ((proposal.scores?.[leadingChoice] || 0) / totalVotes * 100).toFixed(1) : 0;
             const spaceColor = getSpaceColor(proposal.space?.id);
-            const endTime = proposal.end * 1000;
+            const endTime = typeof proposal.end === 'number' && proposal.end > 1000000000000 ? proposal.end : proposal.end * 1000;
+            const isControversial = proposal.isControversial || proposal.title?.includes('🔥');
+            const proposalLink = proposal.link || `https://snapshot.org/#/${proposal.space?.id}/proposal/${proposal.id}`;
             
             return (
               <a
                 key={proposal.id}
-                href={`https://snapshot.org/#/${proposal.space?.id}/proposal/${proposal.id}`}
+                href={proposalLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
                   display: 'block',
-                  background: '#fff',
-                  border: '1px solid #e5e5e5',
+                  background: isControversial ? '#fef2f2' : '#fff',
+                  border: isControversial ? '2px solid #fecaca' : '1px solid #e5e5e5',
                   borderRadius: '8px',
                   padding: '12px',
                   textDecoration: 'none',
                   transition: 'border-color 0.2s',
                 }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = spaceColor}
-                onMouseLeave={e => e.currentTarget.style.borderColor = '#e5e5e5'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = isControversial ? '#fecaca' : '#e5e5e5'}
               >
                 {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
                   <span style={{ 
                     background: spaceColor + '20',
                     color: spaceColor,
@@ -521,6 +549,18 @@ function SnapshotVotes({ width }) {
                   }}>
                     {proposal.space?.name}
                   </span>
+                  {isControversial && (
+                    <span style={{ 
+                      background: '#dc2626',
+                      color: '#fff',
+                      fontSize: '9px',
+                      padding: '2px 5px',
+                      borderRadius: '3px',
+                      fontWeight: 600
+                    }}>
+                      🔥 DRAMA
+                    </span>
+                  )}
                   <span style={{ 
                     marginLeft: 'auto',
                     fontSize: '11px',
@@ -546,24 +586,25 @@ function SnapshotVotes({ width }) {
                   {proposal.title}
                 </div>
                 
-                {/* Progress bar */}
+                {/* Progress bar - handle up to 3 choices */}
                 <div style={{ marginBottom: '6px' }}>
                   <div style={{ 
                     height: '6px', 
                     background: '#f0f0f0', 
                     borderRadius: '3px',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    display: 'flex'
                   }}>
-                    {proposal.choices?.slice(0, 2).map((choice, idx) => {
+                    {proposal.choices?.slice(0, 3).map((choice, idx) => {
                       const pct = totalVotes > 0 ? (proposal.scores?.[idx] || 0) / totalVotes * 100 : 0;
+                      const colors = ['#22C55E', '#EF4444', '#6B7280'];
                       return (
                         <div
                           key={idx}
                           style={{
                             height: '100%',
                             width: `${pct}%`,
-                            background: idx === 0 ? '#22C55E' : '#EF4444',
-                            float: 'left'
+                            background: colors[idx] || '#888',
                           }}
                         />
                       );
@@ -571,12 +612,13 @@ function SnapshotVotes({ width }) {
                   </div>
                 </div>
                 
-                {/* Choices */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                  {proposal.choices?.slice(0, 2).map((choice, idx) => {
+                {/* Choices - show up to 3 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', flexWrap: 'wrap', gap: '4px' }}>
+                  {proposal.choices?.slice(0, 3).map((choice, idx) => {
                     const pct = totalVotes > 0 ? (proposal.scores?.[idx] || 0) / totalVotes * 100 : 0;
+                    const colors = ['#22C55E', '#EF4444', '#6B7280'];
                     return (
-                      <span key={idx} style={{ color: idx === 0 ? '#22C55E' : '#EF4444' }}>
+                      <span key={idx} style={{ color: colors[idx] || '#888' }}>
                         {choice}: {pct.toFixed(1)}%
                       </span>
                     );
