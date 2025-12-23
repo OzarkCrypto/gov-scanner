@@ -15,8 +15,7 @@ function useWindowSize() {
 
 // Snapshot spaces for our protocols
 const SNAPSHOT_SPACES = [
-  { id: 'aave.eth', name: 'Aave', color: '#B6509E' },
-  { id: 'aavelabs.eth', name: 'Aave Labs', color: '#B6509E' },
+  { id: 'aavedao.eth', name: 'Aave DAO', color: '#B6509E' },
   { id: 'lido-snapshot.eth', name: 'Lido', color: '#00A3FF' },
   { id: 'uniswapgovernance.eth', name: 'Uniswap', color: '#FF007A' },
   { id: 'arbitrumfoundation.eth', name: 'Arbitrum', color: '#28A0F0' },
@@ -356,21 +355,13 @@ function SnapshotVotes({ width }) {
     fetchProposals();
   }, []);
 
-  // Custom governance portals (not on Snapshot hub)
-  const CUSTOM_GOVERNANCE = [
-    { 
-      id: 'aave-alignment-2025',
-      title: '🔥 [ARFC] AAVE Token Alignment Phase 1 – Ownership',
-      space: { id: 'aave.eth', name: 'Aave' },
-      end: new Date('2025-12-26T23:59:59Z').getTime(),
-      scores: [1200000, 3800000, 500000],
-      scores_total: 5500000,
-      choices: ['YAE', 'NAY', 'ABSTAIN'],
-      state: 'active',
-      isControversial: true,
-      link: 'https://vote.onaave.com'
-    }
-  ];
+  // Keywords that indicate controversial/drama proposals
+  const DRAMA_PROPOSAL_KEYWORDS = ['alignment', 'takeover', 'hostile', 'emergency', 'urgent', 'dispute', 'controversy'];
+  
+  const isControversialProposal = (title) => {
+    const lowerTitle = title?.toLowerCase() || '';
+    return DRAMA_PROPOSAL_KEYWORDS.some(kw => lowerTitle.includes(kw));
+  };
 
   const fetchProposals = async () => {
     setLoading(true);
@@ -414,13 +405,16 @@ function SnapshotVotes({ width }) {
       });
       
       const data = await response.json();
-      if (data.data?.proposals) {
-        // Combine Snapshot proposals with custom governance
-        const allProposals = [...CUSTOM_GOVERNANCE, ...data.data.proposals];
-        setProposals(allProposals);
+      if (data.data?.proposals && data.data.proposals.length > 0) {
+        // Mark controversial proposals
+        const proposalsWithFlags = data.data.proposals.map(p => ({
+          ...p,
+          isControversial: isControversialProposal(p.title)
+        }));
+        setProposals(proposalsWithFlags);
       } else {
-        // If Snapshot fails, use mock data with custom governance
-        setProposals([...CUSTOM_GOVERNANCE, ...getMockProposals().filter(p => p.space?.id !== 'aave.eth')]);
+        // Use mock data if no active proposals
+        setProposals(getMockProposals());
       }
     } catch (error) {
       console.error('Failed to fetch Snapshot proposals:', error);
@@ -431,7 +425,7 @@ function SnapshotVotes({ width }) {
   };
 
   const getMockProposals = () => [
-    { id: 'aave-alignment', title: '🔥 [ARFC] AAVE Token Alignment Phase 1 – Ownership', space: { id: 'aave.eth', name: 'Aave' }, end: Date.now() + 259200000, scores: [1200000, 3800000, 500000], scores_total: 5500000, choices: ['YAE', 'NAY', 'ABSTAIN'], state: 'active', isControversial: true, link: 'https://vote.onaave.com' },
+    { id: 'aave-alignment', title: '[ARFC] $AAVE token alignment. Phase 1 - Ownership', space: { id: 'aavedao.eth', name: 'Aave DAO' }, end: Date.now() + 259200000, scores: [0.008, 158125, 250805], scores_total: 408930, choices: ['YAE', 'NAY', 'ABSTAIN'], state: 'active', isControversial: true },
     { id: '2', title: 'LIP-28: Treasury Diversification', space: { id: 'lido-snapshot.eth', name: 'Lido' }, end: Date.now() + 172800000, scores: [8000000, 1000000], scores_total: 9000000, choices: ['Yes', 'No'], state: 'active' },
     { id: '3', title: 'Fee Switch Activation Vote', space: { id: 'uniswapgovernance.eth', name: 'Uniswap' }, end: Date.now() + 259200000, scores: [45000000, 5000000], scores_total: 50000000, choices: ['Enable', 'Disable'], state: 'active' },
     { id: '4', title: 'AIP-87: Gaming Catalyst Program', space: { id: 'arbitrumfoundation.eth', name: 'Arbitrum' }, end: Date.now() + 345600000, scores: [120000000, 30000000], scores_total: 150000000, choices: ['For', 'Against'], state: 'active' },
