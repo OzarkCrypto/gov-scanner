@@ -347,9 +347,17 @@ function SnapshotVotes({ width }) {
   const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('active');
+  const [lastUpdate, setLastUpdate] = useState(null);
 
   useEffect(() => {
     fetchProposals();
+    
+    // Auto-refresh every 1 hour (3600000ms)
+    const interval = setInterval(() => {
+      fetchProposals();
+    }, 3600000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // Keywords that indicate controversial/drama proposals
@@ -362,6 +370,7 @@ function SnapshotVotes({ width }) {
 
   const fetchProposals = async () => {
     setLoading(true);
+    setLastUpdate(new Date());
     try {
       const spaceIds = SNAPSHOT_SPACES.map(s => `"${s.id}"`).join(',');
       const query = `
@@ -453,7 +462,7 @@ function SnapshotVotes({ width }) {
     return 3;
   };
 
-  if (loading) {
+  if (loading && proposals.length === 0) {
     return (
       <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
         Loading Snapshot votes...
@@ -463,6 +472,43 @@ function SnapshotVotes({ width }) {
 
   return (
     <div>
+      {/* Header with refresh info */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '12px',
+        flexWrap: 'wrap',
+        gap: '8px'
+      }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <span style={{ fontSize: '12px', color: '#999' }}>
+            {lastUpdate && `Updated: ${lastUpdate.toLocaleTimeString()}`}
+          </span>
+          <span style={{ fontSize: '10px', color: '#bbb' }}>
+            (auto-refresh: 1h)
+          </span>
+        </div>
+        <button
+          onClick={() => fetchProposals()}
+          disabled={loading}
+          style={{
+            background: loading ? '#e5e5e5' : '#fff',
+            border: '1px solid #e5e5e5',
+            borderRadius: '4px',
+            padding: '4px 10px',
+            fontSize: '12px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            color: '#666',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}
+        >
+          {loading ? '⏳' : '↻'} Refresh
+        </button>
+      </div>
+
       {/* Filter buttons */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
         <button
