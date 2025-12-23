@@ -29,7 +29,7 @@ async function fetchForum(forum) {
     
     const topics = (data.topic_list?.topics || [])
       .filter(t => !t.pinned && !t.pinned_globally)
-      .slice(0, 5)
+      .slice(0, 3)
       .map(t => ({
         id: t.id,
         slug: t.slug,
