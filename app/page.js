@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 function useWindowSize() {
   const [size, setSize] = useState({ width: 1200 });
@@ -114,129 +114,129 @@ function timeAgo(dateString) {
 function getMockTopics(forumId) {
   const data = {
     aave: [
-      { id: 1, slug: 'arfc-aave-token-alignment', title: '🔥 [ARFC] AAVE Token Alignment Phase 1 – Ownership (VOTE LIVE)', posts_count: 312, views: 28500, created_at: new Date(Date.now() - 1800000).toISOString() },
-      { id: 2, slug: 'b', title: '⚠️ Labs Unilaterally Pushed Vote - Author Denounces', posts_count: 189, views: 15200, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 3, slug: 'c', title: 'Whale Dumps $38M AAVE Amid Governance Crisis', posts_count: 234, views: 19800, created_at: new Date(Date.now() - 7200000).toISOString() },
+      { id: 1, slug: 'arfc-aave-token-alignment', title: '🔥 [ARFC] AAVE Token Alignment Phase 1 – Ownership (VOTE LIVE)', posts_count: 312, views: 28500, timeAgo: '30m' },
+      { id: 2, slug: 'b', title: '⚠️ Labs Unilaterally Pushed Vote - Author Denounces', posts_count: 189, views: 15200, timeAgo: '1h' },
+      { id: 3, slug: 'c', title: 'Whale Dumps $38M AAVE Amid Governance Crisis', posts_count: 234, views: 19800, timeAgo: '2h' },
     ],
     lido: [
-      { id: 1, slug: 'a', title: 'Concerns about validator concentration risk', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 1800000).toISOString() },
-      { id: 2, slug: 'b', title: '[LIP-XX] stETH withdrawal queue optimization', posts_count: 34, views: 1800, created_at: new Date(Date.now() - 5400000).toISOString() },
-      { id: 3, slug: 'c', title: 'Snapshot Vote: Treasury Diversification', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 10800000).toISOString() },
+      { id: 1, slug: 'a', title: 'Concerns about validator concentration risk', posts_count: 156, views: 8900, timeAgo: '30m' },
+      { id: 2, slug: 'b', title: '[LIP-XX] stETH withdrawal queue optimization', posts_count: 34, views: 1800, timeAgo: '1h' },
+      { id: 3, slug: 'c', title: 'Snapshot Vote: Treasury Diversification', posts_count: 67, views: 3400, timeAgo: '3h' },
     ],
     eigenlayer: [
-      { id: 1, slug: 'a', title: 'EIGEN Token Incentives Proposal', posts_count: 234, views: 12500, created_at: new Date(Date.now() - 900000).toISOString() },
-      { id: 2, slug: 'b', title: 'AVS Security Requirements Discussion', posts_count: 89, views: 5600, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 3, slug: 'c', title: 'Slashing Parameters Update', posts_count: 156, views: 8200, created_at: new Date(Date.now() - 7200000).toISOString() },
+      { id: 1, slug: 'a', title: 'EIGEN Token Incentives Proposal', posts_count: 234, views: 12500, timeAgo: '15m' },
+      { id: 2, slug: 'b', title: 'AVS Security Requirements Discussion', posts_count: 89, views: 5600, timeAgo: '1h' },
+      { id: 3, slug: 'c', title: 'Slashing Parameters Update', posts_count: 156, views: 8200, timeAgo: '2h' },
     ],
     ethena: [
-      { id: 1, slug: 'a', title: 'USDe Backing Transparency Report', posts_count: 178, views: 9800, created_at: new Date(Date.now() - 1200000).toISOString() },
-      { id: 2, slug: 'b', title: '[RFC] sUSDe Yield Distribution', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 4800000).toISOString() },
-      { id: 3, slug: 'c', title: 'Risk Framework for Negative Funding', posts_count: 234, views: 11200, created_at: new Date(Date.now() - 9600000).toISOString() },
+      { id: 1, slug: 'a', title: 'USDe Backing Transparency Report', posts_count: 178, views: 9800, timeAgo: '20m' },
+      { id: 2, slug: 'b', title: '[RFC] sUSDe Yield Distribution', posts_count: 89, views: 4500, timeAgo: '1h' },
+      { id: 3, slug: 'c', title: 'Risk Framework for Negative Funding', posts_count: 234, views: 11200, timeAgo: '3h' },
     ],
     pendle: [
-      { id: 1, slug: 'a', title: 'vePENDLE Gauge Weights - Week 52', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 2400000).toISOString() },
-      { id: 2, slug: 'b', title: 'New PT/YT Markets: EigenLayer Assets', posts_count: 67, views: 3800, created_at: new Date(Date.now() - 7200000).toISOString() },
-      { id: 3, slug: 'c', title: 'Boros Launch Discussion', posts_count: 123, views: 6700, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 1, slug: 'a', title: 'vePENDLE Gauge Weights - Week 52', posts_count: 45, views: 2300, timeAgo: '40m' },
+      { id: 2, slug: 'b', title: 'New PT/YT Markets: EigenLayer Assets', posts_count: 67, views: 3800, timeAgo: '2h' },
+      { id: 3, slug: 'c', title: 'Boros Launch Discussion', posts_count: 123, views: 6700, timeAgo: '4h' },
     ],
     sky: [
-      { id: 1, slug: 'a', title: 'Executive Vote: Stability Fee Adjustment', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 5400000).toISOString() },
-      { id: 2, slug: 'b', title: 'Governance Attack Prevention Framework', posts_count: 234, views: 12300, created_at: new Date(Date.now() - 1800000).toISOString() },
-      { id: 3, slug: 'c', title: 'SKY Token Migration Deadline', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 7200000).toISOString() },
+      { id: 1, slug: 'a', title: 'Executive Vote: Stability Fee Adjustment', posts_count: 89, views: 4500, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Governance Attack Prevention Framework', posts_count: 234, views: 12300, timeAgo: '30m' },
+      { id: 3, slug: 'c', title: 'SKY Token Migration Deadline', posts_count: 156, views: 8900, timeAgo: '2h' },
     ],
     morpho: [
-      { id: 1, slug: 'a', title: 'New Vault: Steakhouse USDC', posts_count: 34, views: 1800, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 2, slug: 'b', title: 'Risk Assessment: PT Collateral', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 10800000).toISOString() },
-      { id: 3, slug: 'c', title: 'MORPHO Token Distribution', posts_count: 145, views: 7800, created_at: new Date(Date.now() - 21600000).toISOString() },
+      { id: 1, slug: 'a', title: 'New Vault: Steakhouse USDC', posts_count: 34, views: 1800, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Risk Assessment: PT Collateral', posts_count: 78, views: 4200, timeAgo: '3h' },
+      { id: 3, slug: 'c', title: 'MORPHO Token Distribution', posts_count: 145, views: 7800, timeAgo: '6h' },
     ],
     curve: [
-      { id: 1, slug: 'a', title: '🚨 URGENT: Vyper Exploit Post-Mortem', posts_count: 234, views: 15600, created_at: new Date(Date.now() - 900000).toISOString() },
-      { id: 2, slug: 'b', title: '[PROPOSAL] Compensation Plan for Affected LPs', posts_count: 189, views: 9800, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 3, slug: 'c', title: 'Gauge Weight Vote - Week 52', posts_count: 23, views: 890, created_at: new Date(Date.now() - 21600000).toISOString() },
+      { id: 1, slug: 'a', title: '🚨 URGENT: Vyper Exploit Post-Mortem', posts_count: 234, views: 15600, timeAgo: '15m' },
+      { id: 2, slug: 'b', title: '[PROPOSAL] Compensation Plan for Affected LPs', posts_count: 189, views: 9800, timeAgo: '1h' },
+      { id: 3, slug: 'c', title: 'Gauge Weight Vote - Week 52', posts_count: 23, views: 890, timeAgo: '6h' },
     ],
     uniswap: [
-      { id: 1, slug: 'a', title: '[RFC] Fee Switch Activation - Final Discussion', posts_count: 456, views: 23400, created_at: new Date(Date.now() - 2700000).toISOString() },
-      { id: 2, slug: 'b', title: 'Cross-chain Expansion Strategy', posts_count: 78, views: 4500, created_at: new Date(Date.now() - 9000000).toISOString() },
-      { id: 3, slug: 'c', title: 'V4 Hook Security Framework', posts_count: 56, views: 3200, created_at: new Date(Date.now() - 36000000).toISOString() },
+      { id: 1, slug: 'a', title: '[RFC] Fee Switch Activation - Final Discussion', posts_count: 456, views: 23400, timeAgo: '45m' },
+      { id: 2, slug: 'b', title: 'Cross-chain Expansion Strategy', posts_count: 78, views: 4500, timeAgo: '2h' },
+      { id: 3, slug: 'c', title: 'V4 Hook Security Framework', posts_count: 56, views: 3200, timeAgo: '10h' },
     ],
     compound: [
-      { id: 1, slug: 'a', title: 'Gauntlet Risk Parameter Recommendations', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 4500000).toISOString() },
-      { id: 2, slug: 'b', title: 'Warning: Large whale accumulating COMP', posts_count: 123, views: 7800, created_at: new Date(Date.now() - 1200000).toISOString() },
-      { id: 3, slug: 'c', title: 'Compound III Migration Timeline', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 1, slug: 'a', title: 'Gauntlet Risk Parameter Recommendations', posts_count: 45, views: 2300, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Warning: Large whale accumulating COMP', posts_count: 123, views: 7800, timeAgo: '20m' },
+      { id: 3, slug: 'c', title: 'Compound III Migration Timeline', posts_count: 67, views: 3400, timeAgo: '4h' },
     ],
     euler: [
-      { id: 1, slug: 'a', title: 'Euler Yield: New PT Markets', posts_count: 56, views: 2800, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 2, slug: 'b', title: 'Risk Parameters Update', posts_count: 34, views: 1600, created_at: new Date(Date.now() - 10800000).toISOString() },
-      { id: 3, slug: 'c', title: 'EUL Incentives Program', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 21600000).toISOString() },
+      { id: 1, slug: 'a', title: 'Euler Yield: New PT Markets', posts_count: 56, views: 2800, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Risk Parameters Update', posts_count: 34, views: 1600, timeAgo: '3h' },
+      { id: 3, slug: 'c', title: 'EUL Incentives Program', posts_count: 89, views: 4500, timeAgo: '6h' },
     ],
     gmx: [
-      { id: 1, slug: 'a', title: 'GMSOL Proposal: Solana Deployment', posts_count: 189, views: 9800, created_at: new Date(Date.now() - 1800000).toISOString() },
-      { id: 2, slug: 'b', title: 'GMX V2 Fee Distribution', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 7200000).toISOString() },
-      { id: 3, slug: 'c', title: 'New Markets: BTC, ETH Pairs', posts_count: 45, views: 2100, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 1, slug: 'a', title: 'GMSOL Proposal: Solana Deployment', posts_count: 189, views: 9800, timeAgo: '30m' },
+      { id: 2, slug: 'b', title: 'GMX V2 Fee Distribution', posts_count: 78, views: 4200, timeAgo: '2h' },
+      { id: 3, slug: 'c', title: 'New Markets: BTC, ETH Pairs', posts_count: 45, views: 2100, timeAgo: '4h' },
     ],
     dydx: [
-      { id: 1, slug: 'a', title: 'dYdX Chain Validator Set Expansion', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 2, slug: 'b', title: 'Trading Rewards Program Update', posts_count: 123, views: 6700, created_at: new Date(Date.now() - 10800000).toISOString() },
-      { id: 3, slug: 'c', title: 'Security Incident Response', posts_count: 234, views: 12300, created_at: new Date(Date.now() - 900000).toISOString() },
+      { id: 1, slug: 'a', title: 'dYdX Chain Validator Set Expansion', posts_count: 67, views: 3400, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Trading Rewards Program Update', posts_count: 123, views: 6700, timeAgo: '3h' },
+      { id: 3, slug: 'c', title: 'Security Incident Response', posts_count: 234, views: 12300, timeAgo: '15m' },
     ],
     frax: [
-      { id: 1, slug: 'a', title: 'FIP-XXX: frxETH V2 Launch', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 5400000).toISOString() },
-      { id: 2, slug: 'b', title: 'Fraxtal Chain Incentives', posts_count: 56, views: 2800, created_at: new Date(Date.now() - 14400000).toISOString() },
-      { id: 3, slug: 'c', title: 'veFXS Gauge Voting', posts_count: 34, views: 1600, created_at: new Date(Date.now() - 28800000).toISOString() },
+      { id: 1, slug: 'a', title: 'FIP-XXX: frxETH V2 Launch', posts_count: 89, views: 4500, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Fraxtal Chain Incentives', posts_count: 56, views: 2800, timeAgo: '4h' },
+      { id: 3, slug: 'c', title: 'veFXS Gauge Voting', posts_count: 34, views: 1600, timeAgo: '8h' },
     ],
     balancer: [
-      { id: 1, slug: 'a', title: 'BIP-XXX: veBAL Incentive Rebalancing', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 2, slug: 'b', title: 'V3 reCLAMM Pool Launch', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 10800000).toISOString() },
-      { id: 3, slug: 'c', title: 'Governance Attack Concerns', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 1200000).toISOString() },
+      { id: 1, slug: 'a', title: 'BIP-XXX: veBAL Incentive Rebalancing', posts_count: 78, views: 4200, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'V3 reCLAMM Pool Launch', posts_count: 45, views: 2300, timeAgo: '3h' },
+      { id: 3, slug: 'c', title: 'Governance Attack Concerns', posts_count: 156, views: 8900, timeAgo: '20m' },
     ],
     maple: [
-      { id: 1, slug: 'a', title: 'Syrup USDC Yield Strategy', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 5400000).toISOString() },
-      { id: 2, slug: 'b', title: 'Pool Delegate Applications', posts_count: 23, views: 1100, created_at: new Date(Date.now() - 14400000).toISOString() },
-      { id: 3, slug: 'c', title: 'Treasury Update Q4', posts_count: 34, views: 1600, created_at: new Date(Date.now() - 28800000).toISOString() },
+      { id: 1, slug: 'a', title: 'Syrup USDC Yield Strategy', posts_count: 45, views: 2300, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Pool Delegate Applications', posts_count: 23, views: 1100, timeAgo: '4h' },
+      { id: 3, slug: 'c', title: 'Treasury Update Q4', posts_count: 34, views: 1600, timeAgo: '8h' },
     ],
     arbitrum: [
-      { id: 1, slug: 'a', title: '[AIP-XX] Sequencer Revenue Distribution', posts_count: 78, views: 5600, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 2, slug: 'b', title: 'Controversy: Foundation Multi-sig Actions', posts_count: 345, views: 18900, created_at: new Date(Date.now() - 600000).toISOString() },
-      { id: 3, slug: 'c', title: 'STIP Round 2 - Project Allocations', posts_count: 123, views: 7800, created_at: new Date(Date.now() - 10800000).toISOString() },
+      { id: 1, slug: 'a', title: '[AIP-XX] Sequencer Revenue Distribution', posts_count: 78, views: 5600, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Controversy: Foundation Multi-sig Actions', posts_count: 345, views: 18900, timeAgo: '10m' },
+      { id: 3, slug: 'c', title: 'STIP Round 2 - Project Allocations', posts_count: 123, views: 7800, timeAgo: '3h' },
     ],
     optimism: [
-      { id: 1, slug: 'a', title: '[PROPOSAL] RetroPGF Round 4 Design', posts_count: 234, views: 12300, created_at: new Date(Date.now() - 4500000).toISOString() },
-      { id: 2, slug: 'b', title: 'Delegate Accountability Framework', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 9000000).toISOString() },
-      { id: 3, slug: 'c', title: 'Superchain Expansion Roadmap', posts_count: 56, views: 3100, created_at: new Date(Date.now() - 28800000).toISOString() },
+      { id: 1, slug: 'a', title: '[PROPOSAL] RetroPGF Round 4 Design', posts_count: 234, views: 12300, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Delegate Accountability Framework', posts_count: 89, views: 4500, timeAgo: '2h' },
+      { id: 3, slug: 'c', title: 'Superchain Expansion Roadmap', posts_count: 56, views: 3100, timeAgo: '8h' },
     ],
     mantle: [
-      { id: 1, slug: 'a', title: 'MIP-30: cMETH Restaking Launch', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 5400000).toISOString() },
-      { id: 2, slug: 'b', title: 'mETH Double-Dose Drive', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 14400000).toISOString() },
-      { id: 3, slug: 'c', title: 'Treasury Allocation Vote', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 21600000).toISOString() },
+      { id: 1, slug: 'a', title: 'MIP-30: cMETH Restaking Launch', posts_count: 67, views: 3400, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'mETH Double-Dose Drive', posts_count: 45, views: 2300, timeAgo: '4h' },
+      { id: 3, slug: 'c', title: 'Treasury Allocation Vote', posts_count: 89, views: 4500, timeAgo: '6h' },
     ],
     sui: [
-      { id: 1, slug: 'a', title: 'SUI Staking Rewards Discussion', posts_count: 123, views: 6700, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 2, slug: 'b', title: 'Developer Grant Program Update', posts_count: 56, views: 2800, created_at: new Date(Date.now() - 10800000).toISOString() },
-      { id: 3, slug: 'c', title: 'Validator Set Changes', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 21600000).toISOString() },
+      { id: 1, slug: 'a', title: 'SUI Staking Rewards Discussion', posts_count: 123, views: 6700, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Developer Grant Program Update', posts_count: 56, views: 2800, timeAgo: '3h' },
+      { id: 3, slug: 'c', title: 'Validator Set Changes', posts_count: 78, views: 4200, timeAgo: '6h' },
     ],
     aptos: [
-      { id: 1, slug: 'a', title: 'AIP-XX: Gas Fee Adjustment', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 5400000).toISOString() },
-      { id: 2, slug: 'b', title: 'Shardines Execution Engine', posts_count: 145, views: 7800, created_at: new Date(Date.now() - 14400000).toISOString() },
-      { id: 3, slug: 'c', title: 'Ecosystem Fund Allocation', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 28800000).toISOString() },
+      { id: 1, slug: 'a', title: 'AIP-XX: Gas Fee Adjustment', posts_count: 89, views: 4500, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'Shardines Execution Engine', posts_count: 145, views: 7800, timeAgo: '4h' },
+      { id: 3, slug: 'c', title: 'Ecosystem Fund Allocation', posts_count: 67, views: 3400, timeAgo: '8h' },
     ],
     plasma: [
-      { id: 1, slug: 'a', title: 'XPL Staking Parameters Launch', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 2400000).toISOString() },
-      { id: 2, slug: 'b', title: 'Zero-Fee USDT Integration', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 7200000).toISOString() },
-      { id: 3, slug: 'c', title: 'DeFi Partner Onboarding: Aave, Euler', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 1, slug: 'a', title: 'XPL Staking Parameters Launch', posts_count: 156, views: 8900, timeAgo: '40m' },
+      { id: 2, slug: 'b', title: 'Zero-Fee USDT Integration', posts_count: 89, views: 4500, timeAgo: '2h' },
+      { id: 3, slug: 'c', title: 'DeFi Partner Onboarding: Aave, Euler', posts_count: 67, views: 3400, timeAgo: '4h' },
     ],
     jupiter: [
-      { id: 1, slug: 'a', title: 'JUP DAO Voting Power Controversy', posts_count: 345, views: 18900, created_at: new Date(Date.now() - 600000).toISOString() },
-      { id: 2, slug: 'b', title: 'Jupuary 2025 Airdrop Allocation', posts_count: 567, views: 34500, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 3, slug: 'c', title: 'Ultra V3 Trading Engine', posts_count: 123, views: 6700, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 1, slug: 'a', title: 'JUP DAO Voting Power Controversy', posts_count: 345, views: 18900, timeAgo: '10m' },
+      { id: 2, slug: 'b', title: 'Jupuary 2025 Airdrop Allocation', posts_count: 567, views: 34500, timeAgo: '1h' },
+      { id: 3, slug: 'c', title: 'Ultra V3 Trading Engine', posts_count: 123, views: 6700, timeAgo: '4h' },
     ],
     kamino: [
-      { id: 1, slug: 'a', title: 'Kamino Lend V2 Launch', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 3600000).toISOString() },
-      { id: 2, slug: 'b', title: 'SyrupUSDC Integration', posts_count: 56, views: 2800, created_at: new Date(Date.now() - 10800000).toISOString() },
-      { id: 3, slug: 'c', title: 'Risk Parameters Update', posts_count: 45, views: 2100, created_at: new Date(Date.now() - 21600000).toISOString() },
+      { id: 1, slug: 'a', title: 'Kamino Lend V2 Launch', posts_count: 89, views: 4500, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'SyrupUSDC Integration', posts_count: 56, views: 2800, timeAgo: '3h' },
+      { id: 3, slug: 'c', title: 'Risk Parameters Update', posts_count: 45, views: 2100, timeAgo: '6h' },
     ],
     raydium: [
-      { id: 1, slug: 'a', title: 'RAY Staking Rewards Update', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 5400000).toISOString() },
-      { id: 2, slug: 'b', title: 'V3 CLMM Pools Launch', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 14400000).toISOString() },
-      { id: 3, slug: 'c', title: 'AcceleRaytor IDO Updates', posts_count: 34, views: 1600, created_at: new Date(Date.now() - 28800000).toISOString() },
+      { id: 1, slug: 'a', title: 'RAY Staking Rewards Update', posts_count: 78, views: 4200, timeAgo: '1h' },
+      { id: 2, slug: 'b', title: 'V3 CLMM Pools Launch', posts_count: 45, views: 2300, timeAgo: '4h' },
+      { id: 3, slug: 'c', title: 'AcceleRaytor IDO Updates', posts_count: 34, views: 1600, timeAgo: '8h' },
     ],
   };
   return (data[forumId] || []).map(t => ({ ...t, sentiment: detectSentiment(t.title) }));
@@ -333,7 +333,7 @@ function ForumSection({ forum, topics }) {
               {topic.posts_count}
             </span>
             <span style={{ fontSize: '10px', color: forum.color, flexShrink: 0, width: '20px', textAlign: 'right' }}>
-              {timeAgo(topic.created_at)}
+              {topic.timeAgo}
             </span>
           </a>
         ))}
@@ -635,14 +635,14 @@ function SnapshotVotes({ width }) {
 }
 
 export default function Home() {
-  // Initialize forumData with mock data (works on both SSR and client)
-  const getInitialForumData = () => {
+  // Initialize forumData directly (not lazy) for SSR compatibility
+  const initialForumData = useMemo(() => {
     const data = {};
     FORUMS.forEach(f => { data[f.id] = getMockTopics(f.id); });
     return data;
-  };
+  }, []);
   
-  const [forumData, setForumData] = useState(getInitialForumData);
+  const [forumData, setForumData] = useState(initialForumData);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [filter, setFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('forums');
