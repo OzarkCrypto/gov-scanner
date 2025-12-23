@@ -751,6 +751,8 @@ export default function Home() {
   }, []);
   
   const [forumData, setForumData] = useState(initialForumData);
+  const [liveForums, setLiveForums] = useState([]);
+  const [liveLoading, setLiveLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [filter, setFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('forums');
@@ -764,8 +766,27 @@ export default function Home() {
     return 4;
   };
   
+  // Fetch live forum data
+  const fetchLiveForums = async () => {
+    try {
+      const res = await fetch('/api/forums');
+      const data = await res.json();
+      setLiveForums(data.forums || []);
+      setLastUpdate(new Date());
+    } catch (err) {
+      console.error('Failed to fetch live forums:', err);
+    } finally {
+      setLiveLoading(false);
+    }
+  };
+  
   useEffect(() => {
     setLastUpdate(new Date());
+    fetchLiveForums();
+    
+    // Refresh every 30 minutes
+    const interval = setInterval(fetchLiveForums, 1800000);
+    return () => clearInterval(interval);
   }, []);
   
   const allTopics = Object.entries(forumData).flatMap(([id, topics]) => {
@@ -886,6 +907,126 @@ export default function Home() {
 
       {activeTab === 'forums' && (
         <>
+          {/* Live Forums Section */}
+          {liveForums.length > 0 && (
+            <div style={{
+              background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+              borderRadius: '12px',
+              padding: '16px',
+              marginBottom: '16px'
+            }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                marginBottom: '12px'
+              }}>
+                <span style={{ 
+                  width: '8px', 
+                  height: '8px', 
+                  background: '#ef4444', 
+                  borderRadius: '50%',
+                  animation: 'pulse 2s infinite'
+                }} />
+                <span style={{ fontWeight: 600, fontSize: '14px', color: '#fff' }}>
+                  Live Updates
+                </span>
+                <span style={{ fontSize: '11px', color: '#888' }}>
+                  Real-time from Discourse API
+                </span>
+              </div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: width < 768 ? '1fr' : 'repeat(2, 1fr)',
+                gap: '12px'
+              }}>
+                {liveForums.map(forum => (
+                  <div key={forum.id} style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    border: `1px solid ${forum.color}40`
+                  }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px',
+                      marginBottom: '10px'
+                    }}>
+                      <span style={{ 
+                        background: forum.color,
+                        color: '#fff',
+                        fontSize: '11px',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        fontWeight: 600
+                      }}>
+                        {forum.name}
+                      </span>
+                      <a 
+                        href={forum.baseUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ fontSize: '11px', color: '#888', textDecoration: 'none' }}
+                      >
+                        ↗ Forum
+                      </a>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {forum.topics.slice(0, 4).map(topic => (
+                        <a
+                          key={topic.id}
+                          href={topic.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '4px 6px',
+                            background: 'rgba(255,255,255,0.03)',
+                            borderRadius: '4px',
+                            textDecoration: 'none',
+                            transition: 'background 0.2s'
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                        >
+                          <span style={{ 
+                            flex: 1,
+                            fontSize: '12px', 
+                            color: '#e5e5e5',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {topic.title}
+                          </span>
+                          <span style={{ fontSize: '10px', color: '#666', flexShrink: 0 }}>
+                            💬{topic.posts_count}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {liveLoading && (
+            <div style={{
+              background: '#1a1a2e',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '16px',
+              textAlign: 'center',
+              color: '#888'
+            }}>
+              Loading live updates...
+            </div>
+          )}
+
           {/* Category Filter */}
           <div style={{ 
             display: 'flex', 
