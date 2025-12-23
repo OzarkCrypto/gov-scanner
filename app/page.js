@@ -973,7 +973,7 @@ export default function Home() {
                       </a>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {forum.topics.slice(0, 4).map(topic => (
+                      {forum.topics.slice(0, 3).map(topic => (
                         <a
                           key={topic.id}
                           href={topic.url}
