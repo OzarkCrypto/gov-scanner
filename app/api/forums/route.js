@@ -4,6 +4,7 @@
 const FORUM_APIS = [
   { id: 'arbitrum', url: 'https://forum.arbitrum.foundation/latest.json', name: 'Arbitrum', color: '#28A0F0' },
   { id: 'compound', url: 'https://www.comp.xyz/latest.json', name: 'Compound', color: '#00D395' },
+  { id: 'safe', url: 'https://forum.safe.global/latest.json', name: 'Safe', color: '#12FF80' },
 ];
 
 async function fetchForum(forum) {
