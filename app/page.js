@@ -300,7 +300,7 @@ function ForumSection({ forum, topics }) {
         {topics.slice(0, 3).map((topic, idx) => (
           <a
             key={idx}
-            href={`${forum.url}/t/${topic.slug}/${topic.id}`}
+            href={`${forum.url}/latest`}
             target="_blank"
             rel="noopener noreferrer"
             style={{
