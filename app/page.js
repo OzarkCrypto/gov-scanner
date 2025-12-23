@@ -2,6 +2,17 @@
 
 import { useState, useEffect } from 'react';
 
+function useWindowSize() {
+  const [size, setSize] = useState({ width: 1200 });
+  useEffect(() => {
+    const handleResize = () => setSize({ width: window.innerWidth });
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return size;
+}
+
 // Categories: Lending, DEX, Staking, L2, Perp, Yield, Stable, Chain
 const FORUMS = [
   // === TIER 1: Major DeFi ($10B+ TVL) ===
@@ -211,28 +222,28 @@ function ForumSection({ forum, topics }) {
   const catColor = CATEGORY_COLORS[forum.cat] || '#888';
   
   return (
-    <div style={{ marginBottom: '8px' }}>
+    <div style={{ marginBottom: '10px' }}>
       <div style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '4px', 
-        marginBottom: '3px',
-        paddingBottom: '2px',
+        gap: '5px', 
+        marginBottom: '4px',
+        paddingBottom: '3px',
         borderBottom: `2px solid ${forum.color}`
       }}>
         {/* Tier indicator */}
-        {forum.tier === 1 && <span style={{ fontSize: '8px' }}>⭐</span>}
+        {forum.tier === 1 && <span style={{ fontSize: '10px' }}>⭐</span>}
         
-        <span style={{ fontWeight: 600, color: '#111', fontSize: '11px' }}>{forum.name}</span>
-        <span style={{ color: '#bbb', fontSize: '9px' }}>${forum.token}</span>
+        <span style={{ fontWeight: 600, color: '#111', fontSize: '13px' }}>{forum.name}</span>
+        <span style={{ color: '#bbb', fontSize: '11px' }}>${forum.token}</span>
         
         {/* Category badge */}
         <span style={{ 
           background: catColor + '20',
           color: catColor,
-          fontSize: '8px', 
-          padding: '1px 3px', 
-          borderRadius: '2px',
+          fontSize: '10px', 
+          padding: '1px 4px', 
+          borderRadius: '3px',
           fontWeight: 500
         }}>
           {forum.cat}
@@ -242,9 +253,9 @@ function ForumSection({ forum, topics }) {
           <span style={{ 
             background: '#fee2e2', 
             color: '#dc2626', 
-            fontSize: '8px', 
-            padding: '1px 3px', 
-            borderRadius: '2px',
+            fontSize: '10px', 
+            padding: '1px 4px', 
+            borderRadius: '3px',
             fontWeight: 600
           }}>
             {dramaCount}🔥
@@ -254,13 +265,13 @@ function ForumSection({ forum, topics }) {
           href={forum.url} 
           target="_blank" 
           rel="noopener noreferrer"
-          style={{ marginLeft: 'auto', color: '#bbb', fontSize: '9px', textDecoration: 'none' }}
+          style={{ marginLeft: 'auto', color: '#bbb', fontSize: '11px', textDecoration: 'none' }}
         >
           ↗
         </a>
       </div>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
         {topics.slice(0, 3).map((topic, idx) => (
           <a
             key={idx}
@@ -270,22 +281,22 @@ function ForumSection({ forum, topics }) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '3px',
-              padding: '2px 3px',
+              gap: '4px',
+              padding: '3px 4px',
               textDecoration: 'none',
-              borderRadius: '2px',
+              borderRadius: '3px',
               background: topic.sentiment.level === 'drama' ? '#fef2f2' : 'transparent',
             }}
             onMouseEnter={e => { if (topic.sentiment.level !== 'drama') e.currentTarget.style.background = '#f8f8f8'; }}
             onMouseLeave={e => { if (topic.sentiment.level !== 'drama') e.currentTarget.style.background = 'transparent'; }}
           >
             {topic.sentiment.tag && (
-              <span style={{ fontSize: '9px', flexShrink: 0, width: '12px' }}>{topic.sentiment.tag}</span>
+              <span style={{ fontSize: '11px', flexShrink: 0, width: '14px' }}>{topic.sentiment.tag}</span>
             )}
-            {!topic.sentiment.tag && <span style={{ width: '12px', flexShrink: 0 }}></span>}
+            {!topic.sentiment.tag && <span style={{ width: '14px', flexShrink: 0 }}></span>}
             <span style={{ 
               flex: 1, 
-              fontSize: '10px', 
+              fontSize: '12px', 
               color: '#444',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -293,10 +304,10 @@ function ForumSection({ forum, topics }) {
             }}>
               {topic.title}
             </span>
-            <span style={{ fontSize: '8px', color: '#bbb', flexShrink: 0 }}>
+            <span style={{ fontSize: '10px', color: '#bbb', flexShrink: 0 }}>
               {topic.posts_count}
             </span>
-            <span style={{ fontSize: '8px', color: forum.color, flexShrink: 0, width: '16px', textAlign: 'right' }}>
+            <span style={{ fontSize: '10px', color: forum.color, flexShrink: 0, width: '20px', textAlign: 'right' }}>
               {timeAgo(topic.created_at)}
             </span>
           </a>
@@ -310,6 +321,16 @@ export default function Home() {
   const [forumData, setForumData] = useState({});
   const [lastUpdate, setLastUpdate] = useState(null);
   const [filter, setFilter] = useState('all');
+  const { width } = useWindowSize();
+  
+  // Responsive columns: 6 -> 4 -> 3 -> 2 -> 1
+  const getColumns = () => {
+    if (width < 480) return 1;
+    if (width < 768) return 2;
+    if (width < 1024) return 3;
+    if (width < 1400) return 4;
+    return 5;
+  };
   
   useEffect(() => {
     const data = {};
@@ -335,25 +356,29 @@ export default function Home() {
       minHeight: '100vh', 
       background: '#fff', 
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      padding: '8px 12px'
+      padding: width < 768 ? '10px' : '12px 20px',
+      maxWidth: '1600px',
+      margin: '0 auto'
     }}>
       {/* Header */}
       <div style={{ 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between',
-        marginBottom: '6px',
-        paddingBottom: '6px',
-        borderBottom: '1px solid #eee'
+        marginBottom: '8px',
+        paddingBottom: '8px',
+        borderBottom: '1px solid #eee',
+        flexWrap: 'wrap',
+        gap: '8px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '14px' }}>📡</span>
-          <span style={{ fontWeight: 700, fontSize: '13px', color: '#111' }}>Gov Scanner</span>
-          <span style={{ fontSize: '9px', color: '#999' }}>{FORUMS.length} protocols</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '18px' }}>📡</span>
+          <span style={{ fontWeight: 700, fontSize: '16px', color: '#111' }}>Gov Scanner</span>
+          <span style={{ fontSize: '11px', color: '#999' }}>{FORUMS.length} protocols</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {lastUpdate && (
-            <span style={{ fontSize: '9px', color: '#bbb' }}>
+            <span style={{ fontSize: '11px', color: '#bbb' }}>
               {lastUpdate.toLocaleTimeString()}
             </span>
           )}
@@ -362,9 +387,9 @@ export default function Home() {
             style={{
               background: '#f5f5f5',
               border: 'none',
-              borderRadius: '3px',
-              padding: '2px 6px',
-              fontSize: '9px',
+              borderRadius: '4px',
+              padding: '4px 10px',
+              fontSize: '12px',
               cursor: 'pointer',
               color: '#666'
             }}
@@ -377,8 +402,8 @@ export default function Home() {
       {/* Category Filter */}
       <div style={{ 
         display: 'flex', 
-        gap: '4px', 
-        marginBottom: '8px',
+        gap: '6px', 
+        marginBottom: '12px',
         flexWrap: 'wrap'
       }}>
         <button
@@ -387,9 +412,9 @@ export default function Home() {
             background: filter === 'all' ? '#111' : '#f5f5f5',
             color: filter === 'all' ? '#fff' : '#666',
             border: 'none',
-            borderRadius: '3px',
-            padding: '2px 6px',
-            fontSize: '9px',
+            borderRadius: '4px',
+            padding: '4px 10px',
+            fontSize: '11px',
             cursor: 'pointer'
           }}
         >
@@ -403,9 +428,9 @@ export default function Home() {
               background: filter === cat ? CATEGORY_COLORS[cat] : '#f5f5f5',
               color: filter === cat ? '#fff' : CATEGORY_COLORS[cat],
               border: 'none',
-              borderRadius: '3px',
-              padding: '2px 6px',
-              fontSize: '9px',
+              borderRadius: '4px',
+              padding: '4px 10px',
+              fontSize: '11px',
               cursor: 'pointer'
             }}
           >
@@ -419,22 +444,22 @@ export default function Home() {
         <div style={{
           background: '#fef2f2',
           border: '1px solid #fecaca',
-          borderRadius: '4px',
-          padding: '6px 8px',
-          marginBottom: '8px'
+          borderRadius: '6px',
+          padding: '10px 12px',
+          marginBottom: '12px'
         }}>
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: '4px',
-            marginBottom: '4px'
+            gap: '6px',
+            marginBottom: '6px'
           }}>
-            <span style={{ fontSize: '10px' }}>🚨</span>
-            <span style={{ fontWeight: 600, fontSize: '10px', color: '#dc2626' }}>
+            <span style={{ fontSize: '14px' }}>🚨</span>
+            <span style={{ fontWeight: 600, fontSize: '13px', color: '#dc2626' }}>
               {dramaTopics.length} Alerts
             </span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {dramaTopics.slice(0, 4).map((t, idx) => (
               <a
                 key={idx}
@@ -444,8 +469,8 @@ export default function Home() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '10px',
+                  gap: '6px',
+                  fontSize: '12px',
                   textDecoration: 'none',
                   color: '#444'
                 }}
@@ -453,8 +478,8 @@ export default function Home() {
                 <span style={{ 
                   color: t.forum.color, 
                   fontWeight: 600,
-                  fontSize: '9px',
-                  width: '55px',
+                  fontSize: '11px',
+                  width: '70px',
                   flexShrink: 0
                 }}>
                   {t.forum.name}
@@ -462,9 +487,9 @@ export default function Home() {
                 <span style={{ 
                   background: CATEGORY_COLORS[t.forum.cat] + '20',
                   color: CATEGORY_COLORS[t.forum.cat],
-                  fontSize: '7px',
-                  padding: '0px 3px',
-                  borderRadius: '2px',
+                  fontSize: '9px',
+                  padding: '1px 4px',
+                  borderRadius: '3px',
                   flexShrink: 0
                 }}>
                   {t.forum.cat}
@@ -482,11 +507,11 @@ export default function Home() {
         </div>
       )}
       
-      {/* Forum Grid - 6 columns for more protocols */}
+      {/* Forum Grid - Responsive columns */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(6, 1fr)',
-        gap: '10px'
+        gridTemplateColumns: `repeat(${getColumns()}, 1fr)`,
+        gap: '16px'
       }}>
         {filteredForums.map(forum => (
           <ForumSection 
@@ -499,22 +524,24 @@ export default function Home() {
       
       {/* Footer Legend */}
       <div style={{
-        marginTop: '8px',
-        paddingTop: '6px',
+        marginTop: '12px',
+        paddingTop: '10px',
         borderTop: '1px solid #eee',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        fontSize: '9px',
-        color: '#999'
+        fontSize: '11px',
+        color: '#999',
+        flexWrap: 'wrap',
+        gap: '8px'
       }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <span>🔥 Drama (sell signal)</span>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <span>🔥 Drama</span>
           <span>⚠️ Watch</span>
           <span>🗳️ Vote</span>
           <span>⭐ Tier 1</span>
         </div>
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {Object.entries(CATEGORY_COLORS).slice(0, 5).map(([cat, color]) => (
             <span key={cat} style={{ color }}>{cat}</span>
           ))}
