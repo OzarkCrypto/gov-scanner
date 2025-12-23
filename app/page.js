@@ -2,19 +2,60 @@
 
 import { useState, useEffect } from 'react';
 
+// Categories: Lending, DEX, Staking, L2, Perp, Yield, Stable, Chain
 const FORUMS = [
-  { id: 'aave', name: 'Aave', url: 'https://governance.aave.com', color: '#B6509E', token: 'AAVE' },
-  { id: 'lido', name: 'Lido', url: 'https://research.lido.fi', color: '#00A3FF', token: 'LDO' },
-  { id: 'curve', name: 'Curve', url: 'https://gov.curve.fi', color: '#FF6B6B', token: 'CRV' },
-  { id: 'uniswap', name: 'Uniswap', url: 'https://gov.uniswap.org', color: '#FF007A', token: 'UNI' },
-  { id: 'compound', name: 'Compound', url: 'https://www.comp.xyz', color: '#00D395', token: 'COMP' },
-  { id: 'maker', name: 'MakerDAO', url: 'https://forum.makerdao.com', color: '#1AAB9B', token: 'MKR' },
-  { id: 'arbitrum', name: 'Arbitrum', url: 'https://forum.arbitrum.foundation', color: '#28A0F0', token: 'ARB' },
-  { id: 'optimism', name: 'Optimism', url: 'https://gov.optimism.io', color: '#FF0420', token: 'OP' }
+  // === TIER 1: Major DeFi ($10B+ TVL) ===
+  { id: 'lido', name: 'Lido', url: 'https://research.lido.fi', color: '#00A3FF', token: 'LDO', cat: 'Staking', tier: 1 },
+  { id: 'aave', name: 'Aave', url: 'https://governance.aave.com', color: '#B6509E', token: 'AAVE', cat: 'Lending', tier: 1 },
+  { id: 'eigenlayer', name: 'EigenLayer', url: 'https://forum.eigenlayer.xyz', color: '#6366F1', token: 'EIGEN', cat: 'Restaking', tier: 1 },
+  
+  // === TIER 2: Major DeFi ($2-10B TVL) ===
+  { id: 'ethena', name: 'Ethena', url: 'https://gov.ethenafoundation.com', color: '#000000', token: 'ENA', cat: 'Stable', tier: 2 },
+  { id: 'uniswap', name: 'Uniswap', url: 'https://gov.uniswap.org', color: '#FF007A', token: 'UNI', cat: 'DEX', tier: 2 },
+  { id: 'pendle', name: 'Pendle', url: 'https://snapshot.org/#/pendle-finance.eth', color: '#0DB2AC', token: 'PENDLE', cat: 'Yield', tier: 2 },
+  { id: 'sky', name: 'Sky', url: 'https://forum.sky.money', color: '#1AAB9B', token: 'SKY', cat: 'Stable', tier: 2 },
+  { id: 'morpho', name: 'Morpho', url: 'https://forum.morpho.org', color: '#2470FF', token: 'MORPHO', cat: 'Lending', tier: 2 },
+  
+  // === TIER 3: Important DeFi ($500M-2B TVL) ===
+  { id: 'curve', name: 'Curve', url: 'https://gov.curve.fi', color: '#FF6B6B', token: 'CRV', cat: 'DEX', tier: 3 },
+  { id: 'compound', name: 'Compound', url: 'https://www.comp.xyz', color: '#00D395', token: 'COMP', cat: 'Lending', tier: 3 },
+  { id: 'euler', name: 'Euler', url: 'https://forum.euler.finance', color: '#4752C4', token: 'EUL', cat: 'Lending', tier: 3 },
+  { id: 'gmx', name: 'GMX', url: 'https://gov.gmx.io', color: '#4B7BEC', token: 'GMX', cat: 'Perp', tier: 3 },
+  { id: 'frax', name: 'Frax', url: 'https://gov.frax.finance', color: '#000000', token: 'FXS', cat: 'Stable', tier: 3 },
+  { id: 'balancer', name: 'Balancer', url: 'https://forum.balancer.fi', color: '#1E1E1E', token: 'BAL', cat: 'DEX', tier: 3 },
+  { id: 'dydx', name: 'dYdX', url: 'https://dydx.forum', color: '#6966FF', token: 'DYDX', cat: 'Perp', tier: 3 },
+  { id: 'maple', name: 'Maple', url: 'https://community.maple.finance', color: '#FF6B4A', token: 'MPL', cat: 'Lending', tier: 3 },
+  
+  // === L2 Chains ===
+  { id: 'arbitrum', name: 'Arbitrum', url: 'https://forum.arbitrum.foundation', color: '#28A0F0', token: 'ARB', cat: 'L2', tier: 2 },
+  { id: 'optimism', name: 'Optimism', url: 'https://gov.optimism.io', color: '#FF0420', token: 'OP', cat: 'L2', tier: 2 },
+  { id: 'mantle', name: 'Mantle', url: 'https://forum.mantle.xyz', color: '#000000', token: 'MNT', cat: 'L2', tier: 3 },
+  
+  // === Alt L1 Chains ===
+  { id: 'sui', name: 'Sui', url: 'https://forums.sui.io', color: '#4DA2FF', token: 'SUI', cat: 'L1', tier: 2 },
+  { id: 'aptos', name: 'Aptos', url: 'https://forum.aptoslabs.com', color: '#2DD8A3', token: 'APT', cat: 'L1', tier: 2 },
+  { id: 'plasma', name: 'Plasma', url: 'https://plasma.to', color: '#7C3AED', token: 'XPL', cat: 'L1', tier: 3 },
+  
+  // === Solana DeFi ===
+  { id: 'jupiter', name: 'Jupiter', url: 'https://vote.jup.ag', color: '#C7F284', token: 'JUP', cat: 'DEX', tier: 2 },
+  { id: 'kamino', name: 'Kamino', url: 'https://gov.kamino.finance', color: '#14F195', token: 'KMNO', cat: 'Lending', tier: 3 },
+  { id: 'raydium', name: 'Raydium', url: 'https://raydium.io', color: '#58E7F0', token: 'RAY', cat: 'DEX', tier: 3 },
 ];
 
-const DRAMA_KEYWORDS = ['urgent', 'emergency', 'hack', 'exploit', 'vulnerability', 'attack', 'dump', 'concern', 'risk', 'warning', 'critical', 'bug', 'dispute', 'controversy', 'conflict', 'failed', 'reject', 'manipulation', 'whale', 'governance attack', 'compensation', 'lawsuit', 'legal', 'fork', 'resign', 'removed'];
-const HOT_KEYWORDS = ['proposal', 'vote', 'snapshot', 'quorum', 'passed', 'approved', 'upgrade', 'airdrop', 'incentive', 'grant'];
+const CATEGORY_COLORS = {
+  'Lending': '#22C55E',
+  'DEX': '#F59E0B', 
+  'Staking': '#3B82F6',
+  'Restaking': '#8B5CF6',
+  'Stable': '#6B7280',
+  'Yield': '#EC4899',
+  'Perp': '#EF4444',
+  'L2': '#06B6D4',
+  'L1': '#14B8A6',
+};
+
+const DRAMA_KEYWORDS = ['urgent', 'emergency', 'hack', 'exploit', 'vulnerability', 'attack', 'dump', 'concern', 'risk', 'warning', 'critical', 'bug', 'dispute', 'controversy', 'conflict', 'failed', 'reject', 'manipulation', 'whale', 'governance attack', 'compensation', 'lawsuit', 'legal', 'fork', 'resign', 'removed', 'security', 'incident'];
+const HOT_KEYWORDS = ['proposal', 'vote', 'snapshot', 'quorum', 'passed', 'approved', 'upgrade', 'airdrop', 'incentive', 'grant', 'temperature check', 'rfc', 'arfc', 'aip', 'lip', 'mip', 'fip', 'bip'];
 
 function detectSentiment(title) {
   const text = title.toLowerCase();
@@ -40,93 +81,187 @@ function getMockTopics(forumId) {
       { id: 1, slug: 'a', title: '[ARFC] Risk Parameter Updates - Polygon v3', posts_count: 23, views: 1205, created_at: new Date(Date.now() - 3600000).toISOString() },
       { id: 2, slug: 'b', title: 'Emergency Response to Oracle Manipulation Attempt', posts_count: 89, views: 4520, created_at: new Date(Date.now() - 7200000).toISOString() },
       { id: 3, slug: 'c', title: '[TEMP CHECK] Add weETH as Collateral', posts_count: 45, views: 2100, created_at: new Date(Date.now() - 14400000).toISOString() },
-      { id: 4, slug: 'd', title: 'GHO Stability Module Parameters', posts_count: 12, views: 890, created_at: new Date(Date.now() - 28800000).toISOString() },
     ],
     lido: [
       { id: 1, slug: 'a', title: 'Concerns about validator concentration risk', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 1800000).toISOString() },
       { id: 2, slug: 'b', title: '[LIP-XX] stETH withdrawal queue optimization', posts_count: 34, views: 1800, created_at: new Date(Date.now() - 5400000).toISOString() },
       { id: 3, slug: 'c', title: 'Snapshot Vote: Treasury Diversification', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 10800000).toISOString() },
-      { id: 4, slug: 'd', title: 'Node Operator Set Expansion', posts_count: 28, views: 1200, created_at: new Date(Date.now() - 21600000).toISOString() },
+    ],
+    eigenlayer: [
+      { id: 1, slug: 'a', title: 'EIGEN Token Incentives Proposal', posts_count: 234, views: 12500, created_at: new Date(Date.now() - 900000).toISOString() },
+      { id: 2, slug: 'b', title: 'AVS Security Requirements Discussion', posts_count: 89, views: 5600, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 3, slug: 'c', title: 'Slashing Parameters Update', posts_count: 156, views: 8200, created_at: new Date(Date.now() - 7200000).toISOString() },
+    ],
+    ethena: [
+      { id: 1, slug: 'a', title: 'USDe Backing Transparency Report', posts_count: 178, views: 9800, created_at: new Date(Date.now() - 1200000).toISOString() },
+      { id: 2, slug: 'b', title: '[RFC] sUSDe Yield Distribution', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 4800000).toISOString() },
+      { id: 3, slug: 'c', title: 'Risk Framework for Negative Funding', posts_count: 234, views: 11200, created_at: new Date(Date.now() - 9600000).toISOString() },
+    ],
+    pendle: [
+      { id: 1, slug: 'a', title: 'vePENDLE Gauge Weights - Week 52', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 2400000).toISOString() },
+      { id: 2, slug: 'b', title: 'New PT/YT Markets: EigenLayer Assets', posts_count: 67, views: 3800, created_at: new Date(Date.now() - 7200000).toISOString() },
+      { id: 3, slug: 'c', title: 'Boros Launch Discussion', posts_count: 123, views: 6700, created_at: new Date(Date.now() - 14400000).toISOString() },
+    ],
+    sky: [
+      { id: 1, slug: 'a', title: 'Executive Vote: Stability Fee Adjustment', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 5400000).toISOString() },
+      { id: 2, slug: 'b', title: 'Governance Attack Prevention Framework', posts_count: 234, views: 12300, created_at: new Date(Date.now() - 1800000).toISOString() },
+      { id: 3, slug: 'c', title: 'SKY Token Migration Deadline', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 7200000).toISOString() },
+    ],
+    morpho: [
+      { id: 1, slug: 'a', title: 'New Vault: Steakhouse USDC', posts_count: 34, views: 1800, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 2, slug: 'b', title: 'Risk Assessment: PT Collateral', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 10800000).toISOString() },
+      { id: 3, slug: 'c', title: 'MORPHO Token Distribution', posts_count: 145, views: 7800, created_at: new Date(Date.now() - 21600000).toISOString() },
     ],
     curve: [
       { id: 1, slug: 'a', title: '🚨 URGENT: Vyper Exploit Post-Mortem', posts_count: 234, views: 15600, created_at: new Date(Date.now() - 900000).toISOString() },
       { id: 2, slug: 'b', title: '[PROPOSAL] Compensation Plan for Affected LPs', posts_count: 189, views: 9800, created_at: new Date(Date.now() - 3600000).toISOString() },
       { id: 3, slug: 'c', title: 'Gauge Weight Vote - Week 52', posts_count: 23, views: 890, created_at: new Date(Date.now() - 21600000).toISOString() },
-      { id: 4, slug: 'd', title: 'crvUSD Market Expansion', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 43200000).toISOString() },
     ],
     uniswap: [
       { id: 1, slug: 'a', title: '[RFC] Fee Switch Activation - Final Discussion', posts_count: 456, views: 23400, created_at: new Date(Date.now() - 2700000).toISOString() },
       { id: 2, slug: 'b', title: 'Cross-chain Expansion Strategy', posts_count: 78, views: 4500, created_at: new Date(Date.now() - 9000000).toISOString() },
-      { id: 3, slug: 'c', title: 'UNI Grants Program - Q1 2025', posts_count: 34, views: 2100, created_at: new Date(Date.now() - 18000000).toISOString() },
-      { id: 4, slug: 'd', title: 'V4 Hook Security Framework', posts_count: 56, views: 3200, created_at: new Date(Date.now() - 36000000).toISOString() },
+      { id: 3, slug: 'c', title: 'V4 Hook Security Framework', posts_count: 56, views: 3200, created_at: new Date(Date.now() - 36000000).toISOString() },
     ],
     compound: [
       { id: 1, slug: 'a', title: 'Gauntlet Risk Parameter Recommendations', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 4500000).toISOString() },
       { id: 2, slug: 'b', title: 'Warning: Large whale accumulating COMP', posts_count: 123, views: 7800, created_at: new Date(Date.now() - 1200000).toISOString() },
       { id: 3, slug: 'c', title: 'Compound III Migration Timeline', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 14400000).toISOString() },
-      { id: 4, slug: 'd', title: 'New Market: wstETH', posts_count: 23, views: 1100, created_at: new Date(Date.now() - 28800000).toISOString() },
     ],
-    maker: [
-      { id: 1, slug: 'a', title: 'Executive Vote: Stability Fee Adjustment', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 5400000).toISOString() },
-      { id: 2, slug: 'b', title: 'Governance Attack Prevention Framework', posts_count: 234, views: 12300, created_at: new Date(Date.now() - 1800000).toISOString() },
-      { id: 3, slug: 'c', title: 'Risk Assessment: RWA Collateral Concerns', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 7200000).toISOString() },
-      { id: 4, slug: 'd', title: 'SubDAO Tokenomics Update', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 14400000).toISOString() },
+    euler: [
+      { id: 1, slug: 'a', title: 'Euler Yield: New PT Markets', posts_count: 56, views: 2800, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 2, slug: 'b', title: 'Risk Parameters Update', posts_count: 34, views: 1600, created_at: new Date(Date.now() - 10800000).toISOString() },
+      { id: 3, slug: 'c', title: 'EUL Incentives Program', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 21600000).toISOString() },
+    ],
+    gmx: [
+      { id: 1, slug: 'a', title: 'GMSOL Proposal: Solana Deployment', posts_count: 189, views: 9800, created_at: new Date(Date.now() - 1800000).toISOString() },
+      { id: 2, slug: 'b', title: 'GMX V2 Fee Distribution', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 7200000).toISOString() },
+      { id: 3, slug: 'c', title: 'New Markets: BTC, ETH Pairs', posts_count: 45, views: 2100, created_at: new Date(Date.now() - 14400000).toISOString() },
+    ],
+    dydx: [
+      { id: 1, slug: 'a', title: 'dYdX Chain Validator Set Expansion', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 2, slug: 'b', title: 'Trading Rewards Program Update', posts_count: 123, views: 6700, created_at: new Date(Date.now() - 10800000).toISOString() },
+      { id: 3, slug: 'c', title: 'Security Incident Response', posts_count: 234, views: 12300, created_at: new Date(Date.now() - 900000).toISOString() },
+    ],
+    frax: [
+      { id: 1, slug: 'a', title: 'FIP-XXX: frxETH V2 Launch', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 5400000).toISOString() },
+      { id: 2, slug: 'b', title: 'Fraxtal Chain Incentives', posts_count: 56, views: 2800, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 3, slug: 'c', title: 'veFXS Gauge Voting', posts_count: 34, views: 1600, created_at: new Date(Date.now() - 28800000).toISOString() },
+    ],
+    balancer: [
+      { id: 1, slug: 'a', title: 'BIP-XXX: veBAL Incentive Rebalancing', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 2, slug: 'b', title: 'V3 reCLAMM Pool Launch', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 10800000).toISOString() },
+      { id: 3, slug: 'c', title: 'Governance Attack Concerns', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 1200000).toISOString() },
+    ],
+    maple: [
+      { id: 1, slug: 'a', title: 'Syrup USDC Yield Strategy', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 5400000).toISOString() },
+      { id: 2, slug: 'b', title: 'Pool Delegate Applications', posts_count: 23, views: 1100, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 3, slug: 'c', title: 'Treasury Update Q4', posts_count: 34, views: 1600, created_at: new Date(Date.now() - 28800000).toISOString() },
     ],
     arbitrum: [
       { id: 1, slug: 'a', title: '[AIP-XX] Sequencer Revenue Distribution', posts_count: 78, views: 5600, created_at: new Date(Date.now() - 3600000).toISOString() },
       { id: 2, slug: 'b', title: 'Controversy: Foundation Multi-sig Actions', posts_count: 345, views: 18900, created_at: new Date(Date.now() - 600000).toISOString() },
       { id: 3, slug: 'c', title: 'STIP Round 2 - Project Allocations', posts_count: 123, views: 7800, created_at: new Date(Date.now() - 10800000).toISOString() },
-      { id: 4, slug: 'd', title: 'Stylus Grants Program', posts_count: 34, views: 2100, created_at: new Date(Date.now() - 21600000).toISOString() },
     ],
     optimism: [
       { id: 1, slug: 'a', title: '[PROPOSAL] RetroPGF Round 4 Design', posts_count: 234, views: 12300, created_at: new Date(Date.now() - 4500000).toISOString() },
       { id: 2, slug: 'b', title: 'Delegate Accountability Framework', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 9000000).toISOString() },
-      { id: 3, slug: 'c', title: 'Voting Cycle 19: Active Proposals', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 18000000).toISOString() },
-      { id: 4, slug: 'd', title: 'Superchain Expansion Roadmap', posts_count: 56, views: 3100, created_at: new Date(Date.now() - 28800000).toISOString() },
-    ]
+      { id: 3, slug: 'c', title: 'Superchain Expansion Roadmap', posts_count: 56, views: 3100, created_at: new Date(Date.now() - 28800000).toISOString() },
+    ],
+    mantle: [
+      { id: 1, slug: 'a', title: 'MIP-30: cMETH Restaking Launch', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 5400000).toISOString() },
+      { id: 2, slug: 'b', title: 'mETH Double-Dose Drive', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 3, slug: 'c', title: 'Treasury Allocation Vote', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 21600000).toISOString() },
+    ],
+    sui: [
+      { id: 1, slug: 'a', title: 'SUI Staking Rewards Discussion', posts_count: 123, views: 6700, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 2, slug: 'b', title: 'Developer Grant Program Update', posts_count: 56, views: 2800, created_at: new Date(Date.now() - 10800000).toISOString() },
+      { id: 3, slug: 'c', title: 'Validator Set Changes', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 21600000).toISOString() },
+    ],
+    aptos: [
+      { id: 1, slug: 'a', title: 'AIP-XX: Gas Fee Adjustment', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 5400000).toISOString() },
+      { id: 2, slug: 'b', title: 'Shardines Execution Engine', posts_count: 145, views: 7800, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 3, slug: 'c', title: 'Ecosystem Fund Allocation', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 28800000).toISOString() },
+    ],
+    plasma: [
+      { id: 1, slug: 'a', title: 'XPL Staking Parameters Launch', posts_count: 156, views: 8900, created_at: new Date(Date.now() - 2400000).toISOString() },
+      { id: 2, slug: 'b', title: 'Zero-Fee USDT Integration', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 7200000).toISOString() },
+      { id: 3, slug: 'c', title: 'DeFi Partner Onboarding: Aave, Euler', posts_count: 67, views: 3400, created_at: new Date(Date.now() - 14400000).toISOString() },
+    ],
+    jupiter: [
+      { id: 1, slug: 'a', title: 'JUP DAO Voting Power Controversy', posts_count: 345, views: 18900, created_at: new Date(Date.now() - 600000).toISOString() },
+      { id: 2, slug: 'b', title: 'Jupuary 2025 Airdrop Allocation', posts_count: 567, views: 34500, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 3, slug: 'c', title: 'Ultra V3 Trading Engine', posts_count: 123, views: 6700, created_at: new Date(Date.now() - 14400000).toISOString() },
+    ],
+    kamino: [
+      { id: 1, slug: 'a', title: 'Kamino Lend V2 Launch', posts_count: 89, views: 4500, created_at: new Date(Date.now() - 3600000).toISOString() },
+      { id: 2, slug: 'b', title: 'SyrupUSDC Integration', posts_count: 56, views: 2800, created_at: new Date(Date.now() - 10800000).toISOString() },
+      { id: 3, slug: 'c', title: 'Risk Parameters Update', posts_count: 45, views: 2100, created_at: new Date(Date.now() - 21600000).toISOString() },
+    ],
+    raydium: [
+      { id: 1, slug: 'a', title: 'RAY Staking Rewards Update', posts_count: 78, views: 4200, created_at: new Date(Date.now() - 5400000).toISOString() },
+      { id: 2, slug: 'b', title: 'V3 CLMM Pools Launch', posts_count: 45, views: 2300, created_at: new Date(Date.now() - 14400000).toISOString() },
+      { id: 3, slug: 'c', title: 'AcceleRaytor IDO Updates', posts_count: 34, views: 1600, created_at: new Date(Date.now() - 28800000).toISOString() },
+    ],
   };
   return (data[forumId] || []).map(t => ({ ...t, sentiment: detectSentiment(t.title) }));
 }
 
 function ForumSection({ forum, topics }) {
   const dramaCount = topics.filter(t => t.sentiment.level === 'drama').length;
+  const catColor = CATEGORY_COLORS[forum.cat] || '#888';
   
   return (
-    <div style={{ marginBottom: '12px' }}>
+    <div style={{ marginBottom: '8px' }}>
       <div style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '6px', 
-        marginBottom: '4px',
-        paddingBottom: '3px',
+        gap: '4px', 
+        marginBottom: '3px',
+        paddingBottom: '2px',
         borderBottom: `2px solid ${forum.color}`
       }}>
-        <span style={{ fontWeight: 600, color: '#111', fontSize: '12px' }}>{forum.name}</span>
-        <span style={{ color: '#aaa', fontSize: '10px' }}>${forum.token}</span>
+        {/* Tier indicator */}
+        {forum.tier === 1 && <span style={{ fontSize: '8px' }}>⭐</span>}
+        
+        <span style={{ fontWeight: 600, color: '#111', fontSize: '11px' }}>{forum.name}</span>
+        <span style={{ color: '#bbb', fontSize: '9px' }}>${forum.token}</span>
+        
+        {/* Category badge */}
+        <span style={{ 
+          background: catColor + '20',
+          color: catColor,
+          fontSize: '8px', 
+          padding: '1px 3px', 
+          borderRadius: '2px',
+          fontWeight: 500
+        }}>
+          {forum.cat}
+        </span>
+        
         {dramaCount > 0 && (
           <span style={{ 
             background: '#fee2e2', 
             color: '#dc2626', 
-            fontSize: '9px', 
-            padding: '1px 4px', 
+            fontSize: '8px', 
+            padding: '1px 3px', 
             borderRadius: '2px',
             fontWeight: 600
           }}>
-            {dramaCount}
+            {dramaCount}🔥
           </span>
         )}
         <a 
           href={forum.url} 
           target="_blank" 
           rel="noopener noreferrer"
-          style={{ marginLeft: 'auto', color: '#bbb', fontSize: '10px', textDecoration: 'none' }}
+          style={{ marginLeft: 'auto', color: '#bbb', fontSize: '9px', textDecoration: 'none' }}
         >
           ↗
         </a>
       </div>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-        {topics.slice(0, 4).map((topic, idx) => (
+        {topics.slice(0, 3).map((topic, idx) => (
           <a
             key={idx}
             href={`${forum.url}/t/${topic.slug}/${topic.id}`}
@@ -135,22 +270,22 @@ function ForumSection({ forum, topics }) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
-              padding: '3px 4px',
+              gap: '3px',
+              padding: '2px 3px',
               textDecoration: 'none',
-              borderRadius: '3px',
+              borderRadius: '2px',
               background: topic.sentiment.level === 'drama' ? '#fef2f2' : 'transparent',
             }}
             onMouseEnter={e => { if (topic.sentiment.level !== 'drama') e.currentTarget.style.background = '#f8f8f8'; }}
             onMouseLeave={e => { if (topic.sentiment.level !== 'drama') e.currentTarget.style.background = 'transparent'; }}
           >
             {topic.sentiment.tag && (
-              <span style={{ fontSize: '10px', flexShrink: 0, width: '14px' }}>{topic.sentiment.tag}</span>
+              <span style={{ fontSize: '9px', flexShrink: 0, width: '12px' }}>{topic.sentiment.tag}</span>
             )}
-            {!topic.sentiment.tag && <span style={{ width: '14px', flexShrink: 0 }}></span>}
+            {!topic.sentiment.tag && <span style={{ width: '12px', flexShrink: 0 }}></span>}
             <span style={{ 
               flex: 1, 
-              fontSize: '11px', 
+              fontSize: '10px', 
               color: '#444',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -158,10 +293,10 @@ function ForumSection({ forum, topics }) {
             }}>
               {topic.title}
             </span>
-            <span style={{ fontSize: '9px', color: '#bbb', flexShrink: 0 }}>
+            <span style={{ fontSize: '8px', color: '#bbb', flexShrink: 0 }}>
               {topic.posts_count}
             </span>
-            <span style={{ fontSize: '9px', color: forum.color, flexShrink: 0, width: '18px', textAlign: 'right' }}>
+            <span style={{ fontSize: '8px', color: forum.color, flexShrink: 0, width: '16px', textAlign: 'right' }}>
               {timeAgo(topic.created_at)}
             </span>
           </a>
@@ -174,6 +309,7 @@ function ForumSection({ forum, topics }) {
 export default function Home() {
   const [forumData, setForumData] = useState({});
   const [lastUpdate, setLastUpdate] = useState(null);
+  const [filter, setFilter] = useState('all');
   
   useEffect(() => {
     const data = {};
@@ -191,29 +327,33 @@ export default function Home() {
     .filter(t => t.sentiment.level === 'drama' || t.sentiment.level === 'warning')
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
+  const categories = [...new Set(FORUMS.map(f => f.cat))];
+  const filteredForums = filter === 'all' ? FORUMS : FORUMS.filter(f => f.cat === filter);
+
   return (
     <div style={{ 
       minHeight: '100vh', 
       background: '#fff', 
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      padding: '12px 16px'
+      padding: '8px 12px'
     }}>
       {/* Header */}
       <div style={{ 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between',
-        marginBottom: '10px',
-        paddingBottom: '8px',
+        marginBottom: '6px',
+        paddingBottom: '6px',
         borderBottom: '1px solid #eee'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '16px' }}>📡</span>
-          <span style={{ fontWeight: 700, fontSize: '14px', color: '#111' }}>Gov Scanner</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '14px' }}>📡</span>
+          <span style={{ fontWeight: 700, fontSize: '13px', color: '#111' }}>Gov Scanner</span>
+          <span style={{ fontSize: '9px', color: '#999' }}>{FORUMS.length} protocols</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {lastUpdate && (
-            <span style={{ fontSize: '10px', color: '#bbb' }}>
+            <span style={{ fontSize: '9px', color: '#bbb' }}>
               {lastUpdate.toLocaleTimeString()}
             </span>
           )}
@@ -223,8 +363,8 @@ export default function Home() {
               background: '#f5f5f5',
               border: 'none',
               borderRadius: '3px',
-              padding: '3px 8px',
-              fontSize: '10px',
+              padding: '2px 6px',
+              fontSize: '9px',
               cursor: 'pointer',
               color: '#666'
             }}
@@ -233,6 +373,46 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      {/* Category Filter */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '4px', 
+        marginBottom: '8px',
+        flexWrap: 'wrap'
+      }}>
+        <button
+          onClick={() => setFilter('all')}
+          style={{
+            background: filter === 'all' ? '#111' : '#f5f5f5',
+            color: filter === 'all' ? '#fff' : '#666',
+            border: 'none',
+            borderRadius: '3px',
+            padding: '2px 6px',
+            fontSize: '9px',
+            cursor: 'pointer'
+          }}
+        >
+          All
+        </button>
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setFilter(cat)}
+            style={{
+              background: filter === cat ? CATEGORY_COLORS[cat] : '#f5f5f5',
+              color: filter === cat ? '#fff' : CATEGORY_COLORS[cat],
+              border: 'none',
+              borderRadius: '3px',
+              padding: '2px 6px',
+              fontSize: '9px',
+              cursor: 'pointer'
+            }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
       
       {/* Drama Alert Bar */}
       {dramaTopics.length > 0 && (
@@ -240,22 +420,22 @@ export default function Home() {
           background: '#fef2f2',
           border: '1px solid #fecaca',
           borderRadius: '4px',
-          padding: '8px 10px',
-          marginBottom: '12px'
+          padding: '6px 8px',
+          marginBottom: '8px'
         }}>
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: '6px',
-            marginBottom: '6px'
+            gap: '4px',
+            marginBottom: '4px'
           }}>
-            <span style={{ fontSize: '12px' }}>🚨</span>
-            <span style={{ fontWeight: 600, fontSize: '11px', color: '#dc2626' }}>
+            <span style={{ fontSize: '10px' }}>🚨</span>
+            <span style={{ fontWeight: 600, fontSize: '10px', color: '#dc2626' }}>
               {dramaTopics.length} Alerts
             </span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-            {dramaTopics.slice(0, 3).map((t, idx) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            {dramaTopics.slice(0, 4).map((t, idx) => (
               <a
                 key={idx}
                 href={`${t.forum.url}/t/${t.slug}/${t.id}`}
@@ -264,8 +444,8 @@ export default function Home() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '11px',
+                  gap: '4px',
+                  fontSize: '10px',
                   textDecoration: 'none',
                   color: '#444'
                 }}
@@ -273,11 +453,21 @@ export default function Home() {
                 <span style={{ 
                   color: t.forum.color, 
                   fontWeight: 600,
-                  fontSize: '10px',
-                  width: '50px',
+                  fontSize: '9px',
+                  width: '55px',
                   flexShrink: 0
                 }}>
                   {t.forum.name}
+                </span>
+                <span style={{ 
+                  background: CATEGORY_COLORS[t.forum.cat] + '20',
+                  color: CATEGORY_COLORS[t.forum.cat],
+                  fontSize: '7px',
+                  padding: '0px 3px',
+                  borderRadius: '2px',
+                  flexShrink: 0
+                }}>
+                  {t.forum.cat}
                 </span>
                 <span style={{ 
                   overflow: 'hidden', 
@@ -292,13 +482,13 @@ export default function Home() {
         </div>
       )}
       
-      {/* Forum Grid */}
+      {/* Forum Grid - 6 columns for more protocols */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '16px'
+        gridTemplateColumns: 'repeat(6, 1fr)',
+        gap: '10px'
       }}>
-        {FORUMS.map(forum => (
+        {filteredForums.map(forum => (
           <ForumSection 
             key={forum.id} 
             forum={forum} 
@@ -309,18 +499,26 @@ export default function Home() {
       
       {/* Footer Legend */}
       <div style={{
-        marginTop: '12px',
-        paddingTop: '8px',
+        marginTop: '8px',
+        paddingTop: '6px',
         borderTop: '1px solid #eee',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px',
-        fontSize: '10px',
+        justifyContent: 'space-between',
+        fontSize: '9px',
         color: '#999'
       }}>
-        <span>🔥 Drama</span>
-        <span>⚠️ Watch</span>
-        <span>🗳️ Vote</span>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <span>🔥 Drama (sell signal)</span>
+          <span>⚠️ Watch</span>
+          <span>🗳️ Vote</span>
+          <span>⭐ Tier 1</span>
+        </div>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          {Object.entries(CATEGORY_COLORS).slice(0, 5).map(([cat, color]) => (
+            <span key={cat} style={{ color }}>{cat}</span>
+          ))}
+        </div>
       </div>
     </div>
   );
