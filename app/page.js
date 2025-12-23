@@ -389,6 +389,10 @@ function SnapshotVotes({ width }) {
             space {
               id
               name
+              voting {
+                quorum
+                quorumType
+              }
             }
             link
           }
@@ -422,11 +426,11 @@ function SnapshotVotes({ width }) {
   };
 
   const getMockProposals = () => [
-    { id: 'aave-alignment', title: '[ARFC] $AAVE token alignment. Phase 1 - Ownership', space: { id: 'aavedao.eth', name: 'Aave DAO' }, end: Date.now() + 259200000, scores: [0.008, 158125, 250805], scores_total: 408930, choices: ['YAE', 'NAY', 'ABSTAIN'], state: 'active', isControversial: true },
-    { id: '2', title: 'LIP-28: Treasury Diversification', space: { id: 'lido-snapshot.eth', name: 'Lido' }, end: Date.now() + 172800000, scores: [8000000, 1000000], scores_total: 9000000, choices: ['Yes', 'No'], state: 'active' },
-    { id: '3', title: 'Fee Switch Activation Vote', space: { id: 'uniswapgovernance.eth', name: 'Uniswap' }, end: Date.now() + 259200000, scores: [45000000, 5000000], scores_total: 50000000, choices: ['Enable', 'Disable'], state: 'active' },
-    { id: '4', title: 'AIP-87: Gaming Catalyst Program', space: { id: 'arbitrumfoundation.eth', name: 'Arbitrum' }, end: Date.now() + 345600000, scores: [120000000, 30000000], scores_total: 150000000, choices: ['For', 'Against'], state: 'active' },
-    { id: '5', title: 'Delegate Incentive Program S5', space: { id: 'opcollective.eth', name: 'Optimism' }, end: Date.now() + 432000000, scores: [25000000, 8000000], scores_total: 33000000, choices: ['Approve', 'Reject'], state: 'active' },
+    { id: 'aave-alignment', title: '[ARFC] $AAVE token alignment. Phase 1 - Ownership', space: { id: 'aavedao.eth', name: 'Aave DAO', voting: { quorum: 320000, quorumType: 'default' } }, end: Date.now() + 259200000, scores: [0.008, 158125, 250805], scores_total: 408930, quorum: 320000, choices: ['YAE', 'NAY', 'ABSTAIN'], state: 'active', isControversial: true },
+    { id: '2', title: 'LIP-28: Treasury Diversification', space: { id: 'lido-snapshot.eth', name: 'Lido', voting: { quorum: 5000000, quorumType: 'default' } }, end: Date.now() + 172800000, scores: [8000000, 1000000], scores_total: 9000000, quorum: 5000000, choices: ['Yes', 'No'], state: 'active' },
+    { id: '3', title: 'Fee Switch Activation Vote', space: { id: 'uniswapgovernance.eth', name: 'Uniswap', voting: { quorum: 40000000, quorumType: 'default' } }, end: Date.now() + 259200000, scores: [45000000, 5000000], scores_total: 50000000, quorum: 40000000, choices: ['Enable', 'Disable'], state: 'active' },
+    { id: '4', title: 'AIP-87: Gaming Catalyst Program', space: { id: 'arbitrumfoundation.eth', name: 'Arbitrum', voting: { quorum: 113000000, quorumType: 'approval' } }, end: Date.now() + 345600000, scores: [120000000, 30000000], scores_total: 150000000, quorum: 113000000, choices: ['For', 'Against'], state: 'active' },
+    { id: '5', title: 'Delegate Incentive Program S5', space: { id: 'opcollective.eth', name: 'Optimism', voting: { quorum: 30000000, quorumType: 'approval' } }, end: Date.now() + 432000000, scores: [25000000, 8000000], scores_total: 33000000, quorum: 30000000, choices: ['Approve', 'Reject'], state: 'active' },
   ];
 
   const getTimeRemaining = (endTime) => {
@@ -619,15 +623,70 @@ function SnapshotVotes({ width }) {
                   })}
                 </div>
                 
-                {/* Total votes */}
-                <div style={{ fontSize: '10px', color: '#999', marginTop: '6px' }}>
-                  {totalVotes > 1000000 
-                    ? `${(totalVotes/1000000).toFixed(1)}M votes`
-                    : totalVotes > 1000 
-                    ? `${(totalVotes/1000).toFixed(1)}K votes`
-                    : `${totalVotes.toFixed(0)} votes`
-                  }
-                </div>
+                {/* Total votes & Quorum */}
+                {(() => {
+                  const quorum = proposal.quorum || proposal.space?.voting?.quorum || 0;
+                  const quorumType = proposal.space?.voting?.quorumType || 'default';
+                  // For approval quorum, use first choice (usually Yes/For/YAE)
+                  const quorumBase = quorumType === 'approval' ? (proposal.scores?.[0] || 0) : totalVotes;
+                  const quorumPercent = quorum > 0 ? (quorumBase / quorum * 100) : 0;
+                  const quorumMet = quorum > 0 && quorumBase >= quorum;
+                  
+                  return (
+                    <div style={{ fontSize: '10px', color: '#999', marginTop: '6px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>
+                          {totalVotes > 1000000 
+                            ? `${(totalVotes/1000000).toFixed(1)}M votes`
+                            : totalVotes > 1000 
+                            ? `${(totalVotes/1000).toFixed(1)}K votes`
+                            : `${totalVotes.toFixed(0)} votes`
+                          }
+                        </span>
+                        {quorum > 0 && (
+                          <span style={{ 
+                            color: quorumMet ? '#22C55E' : '#F59E0B',
+                            fontWeight: 500
+                          }}>
+                            {quorumMet ? '✓ ' : ''}
+                            {quorumPercent.toFixed(0)}% of quorum
+                          </span>
+                        )}
+                      </div>
+                      {quorum > 0 && (
+                        <div style={{ marginTop: '4px' }}>
+                          {/* Quorum progress bar */}
+                          <div style={{ 
+                            height: '3px', 
+                            background: '#e5e5e5', 
+                            borderRadius: '2px',
+                            overflow: 'hidden',
+                            marginBottom: '3px'
+                          }}>
+                            <div style={{
+                              height: '100%',
+                              width: `${Math.min(quorumPercent, 100)}%`,
+                              background: quorumMet ? '#22C55E' : '#F59E0B',
+                            }} />
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#bbb' }}>
+                            <span>
+                              Quorum: {quorum > 1000000 
+                                ? `${(quorum/1000000).toFixed(1)}M` 
+                                : quorum > 1000 
+                                ? `${(quorum/1000).toFixed(0)}K`
+                                : quorum.toFixed(0)
+                              }
+                            </span>
+                            <span style={{ fontStyle: 'italic' }}>
+                              {quorumType === 'approval' ? '(For votes)' : '(Total votes)'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </a>
             );
           })}
