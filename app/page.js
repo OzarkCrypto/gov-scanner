@@ -13,7 +13,7 @@ function useWindowSize() {
   return size;
 }
 
-// Snapshot spaces for our protocols
+// Snapshot spaces for our protocols (only ones that actually use Snapshot)
 const SNAPSHOT_SPACES = [
   { id: 'aavedao.eth', name: 'Aave DAO', color: '#B6509E' },
   { id: 'lido-snapshot.eth', name: 'Lido', color: '#00A3FF' },
@@ -27,18 +27,15 @@ const SNAPSHOT_SPACES = [
   { id: 'curve.eth', name: 'Curve', color: '#FF6B6B' },
   { id: 'frax.eth', name: 'Frax', color: '#000000' },
   { id: 'gmx.eth', name: 'GMX', color: '#4B7BEC' },
-  { id: 'pendle-finance.eth', name: 'Pendle', color: '#0DB2AC' },
   { id: 'morpho.eth', name: 'Morpho', color: '#2470FF' },
-  { id: 'eigenfoundation.eth', name: 'EigenLayer', color: '#6366F1' },
-  { id: 'mantle.eth', name: 'Mantle', color: '#000000' },
-  { id: 'ethena.eth', name: 'Ethena', color: '#000000' },
   { id: 'dydxgov.eth', name: 'dYdX', color: '#6966FF' },
   { id: 'apecoin.eth', name: 'ApeCoin', color: '#0052FF' },
-  { id: 'compound-governor.eth', name: 'Compound', color: '#00D395' },
+  { id: 'comp-vote.eth', name: 'Compound', color: '#00D395' },
   { id: 'sushigov.eth', name: 'Sushi', color: '#FA52A0' },
   { id: '1inch.eth', name: '1inch', color: '#1B314F' },
   { id: 'snapshot.dcl.eth', name: 'Decentraland', color: '#FF2D55' },
-  { id: 'jup.eth', name: 'Jupiter', color: '#C7F284' },
+  { id: 'stgdao.eth', name: 'Stargate', color: '#000000' },
+  // Note: Pendle, EigenLayer, Mantle, Ethena, Jupiter use their own governance systems
 ];
 
 // Categories: Lending, DEX, Staking, L2, Perp, Yield, Stable, Chain
