@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Gov Scanner - DeFi Governance Monitor',
-  description: 'Monitor DeFi governance forums for drama and important proposals',
+  title: 'Gov Scanner - Crypto Governance Monitor',
+  description: 'Monitor crypto governance forums and active votes across 25+ protocols',
 }
 
 export default function RootLayout({ children }) {
