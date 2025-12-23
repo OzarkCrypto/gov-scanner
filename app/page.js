@@ -499,7 +499,8 @@ function SnapshotVotes({ width }) {
         <div style={{
           display: 'grid',
           gridTemplateColumns: `repeat(${getColumns()}, 1fr)`,
-          gap: '12px'
+          gap: '12px',
+          width: '100%'
         }}>
           {proposals.map((proposal) => {
             const totalVotes = proposal.scores_total || 0;
@@ -524,6 +525,8 @@ function SnapshotVotes({ width }) {
                   padding: '12px',
                   textDecoration: 'none',
                   transition: 'border-color 0.2s',
+                  minWidth: 0,
+                  overflow: 'hidden'
                 }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = spaceColor}
                 onMouseLeave={e => e.currentTarget.style.borderColor = isControversial ? '#fecaca' : '#e5e5e5'}
@@ -648,13 +651,12 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('forums');
   const { width } = useWindowSize();
   
-  // Responsive columns: 6 -> 4 -> 3 -> 2 -> 1
+  // Responsive columns: 4 -> 3 -> 2 -> 1
   const getColumns = () => {
-    if (width < 480) return 1;
+    if (width < 500) return 1;
     if (width < 768) return 2;
-    if (width < 1024) return 3;
-    if (width < 1400) return 4;
-    return 5;
+    if (width < 1100) return 3;
+    return 4;
   };
   
   useEffect(() => {
@@ -679,9 +681,16 @@ export default function Home() {
       background: '#fafafa', 
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       padding: width < 768 ? '10px' : '12px 20px',
-      maxWidth: '1600px',
-      margin: '0 auto'
+      width: '100%',
+      maxWidth: '100vw',
+      boxSizing: 'border-box',
+      overflowX: 'hidden'
     }}>
+      <div style={{
+        maxWidth: '1400px',
+        margin: '0 auto',
+        width: '100%'
+      }}>
       {/* Header */}
       <div style={{ 
         display: 'flex', 
@@ -884,7 +893,8 @@ export default function Home() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${getColumns()}, 1fr)`,
-            gap: '16px'
+            gap: '16px',
+            width: '100%'
           }}>
             {filteredForums.map(forum => (
               <div
@@ -893,7 +903,9 @@ export default function Home() {
                   background: '#fff',
                   borderRadius: '8px',
                   padding: '12px',
-                  border: '1px solid #e5e5e5'
+                  border: '1px solid #e5e5e5',
+                  minWidth: 0,
+                  overflow: 'hidden'
                 }}
               >
                 <ForumSection 
@@ -934,6 +946,7 @@ export default function Home() {
             <span key={cat} style={{ color }}>{cat}</span>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
