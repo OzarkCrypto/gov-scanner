@@ -635,7 +635,14 @@ function SnapshotVotes({ width }) {
 }
 
 export default function Home() {
-  const [forumData, setForumData] = useState({});
+  // Initialize forumData with mock data (works on both SSR and client)
+  const getInitialForumData = () => {
+    const data = {};
+    FORUMS.forEach(f => { data[f.id] = getMockTopics(f.id); });
+    return data;
+  };
+  
+  const [forumData, setForumData] = useState(getInitialForumData);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [filter, setFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('forums');
@@ -651,9 +658,6 @@ export default function Home() {
   };
   
   useEffect(() => {
-    const data = {};
-    FORUMS.forEach(f => { data[f.id] = getMockTopics(f.id); });
-    setForumData(data);
     setLastUpdate(new Date());
   }, []);
   
