@@ -351,12 +351,9 @@ function LiveForumsSection({ forums, loading }) {
   if (loading) {
     return (
       <div style={{
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-        borderRadius: '12px',
-        padding: '20px',
-        marginBottom: '16px',
         textAlign: 'center',
-        color: '#888'
+        padding: '40px',
+        color: '#666'
       }}>
         Loading live forum data...
       </div>
@@ -378,30 +375,25 @@ function LiveForumsSection({ forums, loading }) {
   }
   
   return (
-    <div style={{
-      background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-      borderRadius: '12px',
-      padding: '16px',
-      marginBottom: '16px'
-    }}>
+    <div>
       <div style={{ 
         display: 'flex', 
         alignItems: 'center', 
         gap: '8px',
-        marginBottom: '12px'
+        marginBottom: '16px'
       }}>
         <span style={{ 
           width: '8px', 
           height: '8px', 
-          background: '#ef4444', 
+          background: '#22C55E', 
           borderRadius: '50%',
           animation: 'pulse 2s infinite'
         }} />
-        <span style={{ fontWeight: 600, fontSize: '14px', color: '#fff' }}>
-          Live Updates
+        <span style={{ fontWeight: 600, fontSize: '14px', color: '#111' }}>
+          Live Forums
         </span>
-        <span style={{ fontSize: '11px', color: '#888' }}>
-          {liveForums.length} forums connected via Discourse API
+        <span style={{ fontSize: '12px', color: '#666' }}>
+          {liveForums.length} connected via Discourse API
         </span>
       </div>
       
@@ -412,10 +404,11 @@ function LiveForumsSection({ forums, loading }) {
       }}>
         {liveForums.map(forum => (
           <div key={forum.id} style={{
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '8px',
-            padding: '12px',
-            border: `1px solid ${forum.color}40`
+            background: '#fff',
+            borderRadius: '12px',
+            padding: '14px',
+            border: '1px solid #e5e5e5',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
           }}>
             <div style={{ 
               display: 'flex', 
@@ -425,7 +418,7 @@ function LiveForumsSection({ forums, loading }) {
             }}>
               <span style={{ 
                 background: forum.color,
-                color: forum.color === '#FFEEDA' || forum.color === '#DFFE00' || forum.color === '#000000' ? '#000' : '#fff',
+                color: forum.color === '#FFDBB0' || forum.color === '#DFFE00' || forum.color === '#6CF9D8' || forum.color === '#12FF80' ? '#000' : '#fff',
                 fontSize: '11px',
                 padding: '2px 8px',
                 borderRadius: '4px',
@@ -437,7 +430,7 @@ function LiveForumsSection({ forums, loading }) {
                 href={forum.baseUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={{ fontSize: '11px', color: '#888', textDecoration: 'none' }}
+                style={{ fontSize: '11px', color: '#666', textDecoration: 'none' }}
               >
                 ↗ Forum
               </a>
@@ -453,19 +446,19 @@ function LiveForumsSection({ forums, loading }) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    padding: '4px 6px',
-                    background: 'rgba(255,255,255,0.03)',
-                    borderRadius: '4px',
+                    padding: '6px 8px',
+                    background: '#f8f9fa',
+                    borderRadius: '6px',
                     textDecoration: 'none',
                     transition: 'background 0.2s'
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                  onMouseEnter={e => e.currentTarget.style.background = '#f0f0f0'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#f8f9fa'}
                 >
                   <span style={{ 
                     flex: 1,
                     fontSize: '12px', 
-                    color: '#e5e5e5',
+                    color: '#333',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap'
@@ -474,7 +467,7 @@ function LiveForumsSection({ forums, loading }) {
                   </span>
                   <span style={{ 
                     fontSize: '10px', 
-                    color: '#666',
+                    color: '#999',
                     whiteSpace: 'nowrap'
                   }}>
                     {getRelativeTime(topic.bumped_at)}
